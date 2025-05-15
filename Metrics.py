@@ -5,7 +5,8 @@ import math
 import syllapy
 import ast
 
-#print(cupy.show_config())
+spacy.cli.download("en_core_web_sm")
+nltk.download("punkt")
 spacy.require_cpu()    
 npl=spacy.load("en_core_web_sm",disable=["parser", "ner"])
 print(npl.pipe_names)
