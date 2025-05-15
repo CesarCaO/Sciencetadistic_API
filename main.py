@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile
 import json
+import fitz
+import Metrics as m
 
 app = FastAPI() #objeto que instancia Fast API
 
@@ -13,3 +15,21 @@ def title_size():
           data=json.load(file)
           data['current_document']=17
      return data
+
+@app.post("/lexical_density/")
+def tittle_size_document(file: UploadFile):
+     pdf=open(file.file,"rb")
+     doc=fitz.open(pdf)
+     text=""
+     for page in doc:
+          text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
+     
+     lexical_density=m.calculateLexicalDensity(text)
+
+     with open("./JSON_Metrics/Lexical_density.json", "r") as file:
+          data=json.load(file)
+          data['current_document']=lexical_density
+          
+     return data
+     
+ 
