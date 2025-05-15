@@ -1,8 +1,10 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, HTTPException
 import json
 import fitz
 import Metrics as m
+import logging
 
+logger=logging.getLogger("uvicorn.error")
 app = FastAPI() #objeto que instancia Fast API
 
 @app.get("/")#Cuando alguien llame a ala ruta raíz entonces haz lo que viene en la línea inmediata
@@ -18,18 +20,24 @@ def title_size():
 
 @app.post("/lexical_density/")
 def tittle_size_document(file: UploadFile):
-     pdf=open(file.file,"rb")
-     doc=fitz.open(pdf)
-     text=""
-     for page in doc:
-          text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
-     
-     lexical_density=m.calculateLexicalDensity(text)
-
-     with open("./JSON_Metrics/Lexical_density.json", "r") as file:
-          data=json.load(file)
-          data['current_document']=lexical_density
+     try:
+          file.file.seek(0)  # Reset the file pointer to the beginning
+          doc= fitz.open(stream=file.file, filetype="pdf")
+          text=""
+          for page in doc:
+               text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
           
-     return data
+          lexical_density=m.calculateLexicalDensity(text)
+
+          with open("./JSON_Metrics/Lexical_density.json", "r") as file:
+               data=json.load(file)
+               data['current_document']=lexical_density
+               
+          return data
+     
+     except Exception as e:
+
+          logger.exception("Error processing the PDF file")
+          raise HTTPException(status_code=500, detail=str(e))
      
  
