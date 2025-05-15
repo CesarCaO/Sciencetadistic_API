@@ -22,7 +22,7 @@ def title_size():
 def tittle_size_document(file: UploadFile):
      try:
           file.file.seek(0)  # Reset the file pointer to the beginning
-          doc= fitz.open(stream=file.file, filetype="pdf")
+          doc= fitz.open(stream=file.file.read(), filetype="pdf")
           text=""
           for page in doc:
                text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
