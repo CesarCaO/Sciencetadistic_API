@@ -1,11 +1,24 @@
+import nltk
+import spacy
+
+nltk.download('punkt', quiet=True)
+spacy.cli.download("en_core_web_sm")
+
+
+import Metrics as m
+spacy.require_cpu()
+npl = spacy.load("en_core_web_sm", disable=["parser", "ner"])
+
 from fastapi import FastAPI, UploadFile, HTTPException
 import json
 import fitz
-import Metrics as m
 import logging
+
 
 logger=logging.getLogger("uvicorn.error")
 app = FastAPI() #objeto que instancia Fast API
+
+
 
 @app.get("/")#Cuando alguien llame a ala ruta raíz entonces haz lo que viene en la línea inmediata
 def index():
