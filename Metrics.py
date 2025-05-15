@@ -4,16 +4,9 @@ import numpy as np
 import math
 import syllapy
 import ast
-import cupy
 
 #print(cupy.show_config())
-try:
-    spacy.prefer_gpu()
-    print("GPU Enabled")
-except ValueError:
-    spacy.require_cpu()
-    print("CPU Disabled")
-
+spacy.require_cpu()    
 npl=spacy.load("en_core_web_sm",disable=["parser", "ner"])
 print(npl.pipe_names)
 
