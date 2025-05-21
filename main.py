@@ -34,6 +34,7 @@ def abstract_size(texto:str):
           logger.exception("Error to calculate the abstract size")
           raise HTTPException(status_code=500, detail=str(e))
 
+
 app.post("/number_references/")
 def count_references(texto:str):
      try:
@@ -112,7 +113,7 @@ def sophitication_document(file: UploadFile):
 
           sophitication=m.calculateSophistication(text)
 
-          with open("./JSON_Metrics/Lexica_density.json", "r") as file:
+          with open("./JSON_Metrics/Lexical_density.json", "r") as file:
                data=json.load(file)
                data['current_document']=sophitication
                
