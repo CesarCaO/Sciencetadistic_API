@@ -148,7 +148,7 @@ def calculateSophistication(texto):
 
 
 
-def calculateSophisticationByLength(texto):
+def calculateSophisticationByLenght(texto):
     
     list_Tokenized=tokenizeWords(texto)
     functionWords=getFunctionWords(texto)
@@ -218,8 +218,7 @@ def The_SMOG_Index(texto):
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
 #*Preliminar analysis
 
-def count_references(texto):
-    texto=texto.strip().strip('"').strip("'")
+def count_references_xml(texto):
     try:
         list_references=ast.literal_eval(texto)
     except(ValueError, SyntaxError):
@@ -228,9 +227,22 @@ def count_references(texto):
         return 0
     return(len(list_references))
 
-#def count_authors(texto):
-    #list_authors = ast.literal_eval(texto)
-    #return(len(list_authors))
+def count_authors(texto):
+    list_authors = ast.literal_eval(texto)
+    return(len(list_authors))
+
+def abstract_size(texto):
+    words=tokenizeWords(texto)
+    return(len(words))
+
+def number_references(texto):
+    references=texto.strip("\n")
+    return(len(references))
+
+def number_authors(texto):
+    authors=texto.strip(", ")
+    return(len(authors))
+
 
 
 
