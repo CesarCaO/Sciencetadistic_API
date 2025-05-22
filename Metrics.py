@@ -170,9 +170,9 @@ def calculateSophisticationByLenght(texto):
     return(SFLexica)
 
 def calculateTTR(texto):
-    tokenizeWords=tokenizeWords(texto)
-    uniqueWors=set(tokenizeWords)
-    TTR=len(uniqueWors)/float(len(tokenizeWords))
+    words=tokenizeWords(texto)
+    uniqueWords=set(words)
+    TTR=len(uniqueWors)/float(len(words))
     return TTR
 
 def calculateTTRTagged(texto):
