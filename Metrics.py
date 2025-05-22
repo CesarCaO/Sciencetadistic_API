@@ -172,7 +172,7 @@ def calculateSophisticationByLenght(texto):
 def calculateTTR(texto):
     words=tokenizeWords(texto)
     uniqueWords=set(words)
-    TTR=len(uniqueWors)/float(len(words))
+    TTR=len(uniqueWords)/float(len(words))
     return TTR
 
 def calculateTTRTagged(texto):
