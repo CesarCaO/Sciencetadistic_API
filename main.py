@@ -143,6 +143,27 @@ def sophitication_by_lenght_document(file: UploadFile):
      except Exception as e:
           logger.exception("Error processing the PDF file")
           raise HTTPException(status_code=500, detail=str(e))
+     
+@app.post("/ttr/")
+def ttr_document(file: UploadFile):
+     try:
+          file.file.seek(0)
+          doc= fitz.open(stream=file.file.read(), filetype="pdf")
+          text=""
+          for page in doc:
+               text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
+
+          ttr=m.calculateTTR(text)
+
+          with open("./JSON_Metrics/Lexical_density.json", "r") as file:
+               data=json.load(file)
+               data['current_document']=ttr
+               
+          return data
+     
+     except Exception as e:
+          logger.exception("Error processing the PDF file")
+          raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/ttr_tagged/")
 def ttr_tagged_document(file: UploadFile):
