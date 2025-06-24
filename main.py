@@ -19,14 +19,13 @@ def index():
 def metrics(metric: str, file: UploadFile):
      try:
           metric = metric.lower()
+          file.file.seek(0)  # Reset the file pointer to the beginning
+          doc = fitz.open(stream=file.file.read(), filetype="pdf")
+          for page in doc:
+               text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
           text = ""
 
           if metric =="ttr":
-               file.file.seek(0)  # Reset the file pointer to the beginning
-               doc = fitz.open(stream=file.file.read(), filetype="pdf")
-               for page in doc:
-                    text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
-
                ttr_current_document=cm.calculateTTR(text)
 
                with open("./JSON_Metrics/TTR.json", "r") as file:
