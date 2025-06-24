@@ -34,6 +34,8 @@ def metrics(metric: str, file: UploadFile):
                     data = json.load(file)
                     data['metric'] = "TTR"
                     data['current_document']= ttr_current_document
+                    
+               return data
 
           else:
                raise HTTPException(status_code=400, detail="Metric not supported")
