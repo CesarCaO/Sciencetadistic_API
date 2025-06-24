@@ -46,7 +46,7 @@ def metrics(metric: str, file: UploadFile):
           raise HTTPException(status_code=500, detail=str(e))
 
 
-
+"""
 @app.post("/tagged_lexical_density/")
 def tagged_lexical_density_document(file: UploadFile):
      try:
@@ -68,5 +68,5 @@ def tagged_lexical_density_document(file: UploadFile):
      except Exception as e:
           logger.exception("Error processing the PDF file")
           raise HTTPException(status_code=500, detail=str(e))  
-
+"""
 
