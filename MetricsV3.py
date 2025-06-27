@@ -106,14 +106,12 @@ def calculateTTR(texto):
 
 
 def calculateTTRRoot(texto):
-    tokenized=tokenizeWords(texto)
-    TTRTagged=len(set(tokenized))/math.sqrt(len(tokenized))
-    return TTRTagged
+    lex=LexicalRichness(texto)
+    return lex.rttr
 
 def calculateTTRCorregido(texto):
-    tokenized=tokenizeWords(texto)
-    TTRTagged=len(set(tokenized))/math.sqrt((2*len(tokenized)))
-    return TTRTagged
+    lex=LexicalRichness(texto)
+    return lex.cttr
   
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
