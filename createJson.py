@@ -33,7 +33,7 @@ with open(save_path+'TTR.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
 """
-
+"""
 #Root TTR
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
 ttr_acepted=df_aceptados["Texto Completo"].progress_apply(m.calculateTTRRoot).tolist()
@@ -48,3 +48,4 @@ ttr={
 with open(save_path+'Root_TTR.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
+"""

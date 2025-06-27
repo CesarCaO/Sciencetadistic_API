@@ -4,5 +4,11 @@ import spacy
 nltk.download('punkt', quiet=True)
 nltk.download('punkt_tab', quiet=True)
 spacy.cli.download("en_core_web_sm")
-spacy.require_cpu()
-npl = spacy.load("en_core_web_sm", disable=["parser", "ner"])
+
+# Configuración CORRECTA del modelo
+spacy.require_cpu()  # Primero requerir CPU
+nlp = spacy.load(  # Luego cargar el modelo
+    "en_core_web_sm", 
+    disable=["ner", "textcat", "parser"]  # Deshabilitar más componentes para eficiencia
+)
+
