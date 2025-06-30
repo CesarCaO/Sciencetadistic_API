@@ -1,9 +1,8 @@
 import nltk
-import numpy as np
-import math
 import re
 from lexicalrichness import LexicalRichness
-from npl_models import npl #Natural Language Processing models
+from npl_models import nlp #Natural Language Processing models
+from readability import Readability
 
 #print(cupy.show_config())
 
@@ -32,17 +31,20 @@ def cleanText(texto):
     texto = re.sub(r'(?<=\s)[.,;]+(?=\s)', '', texto)
     #Colapsa múltiples espacios en uno solo
     texto = re.sub(r'\s{2,}', ' ', texto).strip()
-
     #Eliminar repeticiones innecesarias
     texto = re.sub(r'([.,;])(?:\s*\1)+', r'\1', texto) 
     return texto
 
-
-
-
+def wordsTagged(texto):#*Funcion para etiquetar las palabras y solo permitir las que tienen un valor lexico
+    #python -m spacy download en_core_web_sm
+    doc=nlp(texto)
+    #for token in doc: #Este ciclo se creo para analizar como son etiquedas las palbras antes de filtrarlas por su peso lexico
+        #print(f"{token.text}-->{token.pos_}")
+    tagged=[token.text.lower() for token in doc if token.pos_ in ["NOUN", "VERB", "ADJ", "ADV"]]
+    return set(tagged)
 def getFunctionWords(texto):#Función para obtener las function words
   
-  info=npl(texto)
+  info=nlp(texto)
   functionwords=[token.text.lower() for token in info if token.is_stop]
   setfunctionwords=set(functionwords)
   return setfunctionwords
@@ -98,6 +100,16 @@ def calculateLexicalDensity(texto):
     return DL
 
 
+def calculateTaggedLexicalDensity(texto):
+    tokenized=tokenizeWords(texto)
+    tagged=wordsTagged(texto)
+    print("Palabras etiquetadas: ",len(tagged))
+    print("Palabras totales: ",len(tokenized))
+    uniqueTagged=set(tagged)
+    print("Palabras etiquetadas únicas: ",uniqueTagged)
+    DL_tagged=len(uniqueTagged)/float(len(tokenized))
+    return DL_tagged
+
 
 def calculateTTR(texto):
    
@@ -109,11 +121,16 @@ def calculateTTRRoot(texto):
     lex=LexicalRichness(texto)
     return lex.rttr
 
-def calculateTTRCorregido(texto):
+def calculateTTRCorrected(texto):
     lex=LexicalRichness(texto)
     return lex.cttr
   
+#//////////////////////////////////////////////////////////////////////////////////////////////////////
+#*Redeability metrics
 
+def TFRE(texto):
+    r = Readability(texto)
+    return r.flesch().score
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
 """
 #*Preliminar analysis
@@ -132,8 +149,7 @@ def count_references(texto):
     #list_authors = ast.literal_eval(texto)
     #return(len(list_authors))
 """
-#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

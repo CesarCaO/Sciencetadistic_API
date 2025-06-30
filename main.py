@@ -1,5 +1,5 @@
 
-import MetricsV2 as cm
+import MetricsV3 as cm
 from fastapi import FastAPI, UploadFile, HTTPException
 import json
 import fitz
@@ -27,14 +27,44 @@ def metrics(metric: str, file: UploadFile):
           
 
           if metric =="ttr":
-               ttr_current_document=cm.calculateTTR(text)
 
+               current_document=cm.calculateTTR(text)
                with open("./JSON_Metrics/TTR.json", "r") as file:
                     data = json.load(file)
                     data['metric'] = "TTR"
-                    data['current_document']= ttr_current_document
-                    
+                    data['current_document']= current_document 
                return data
+          
+          elif metric == "root_ttr":
+
+               current_document=cm.calculateTTRRoot(text)
+               with open("./JSON_Metrics/Root_TTR.json","r") as file:
+                    data = json.load(file)
+                    data['metric'] = "RootTTR"
+                    data['current_document']= current_document
+               return data
+
+          elif metric == "ttr_corrected":
+
+               current_document = cm.calculateTTRCorrected(text)
+               with open("./JSON_Metrics/Corrected_TTR.json","r") as file:
+                    data = json.load(file)
+                    data['metric'] = "CorrectedTTR"
+                    data['current_document']= current_document
+               return data
+          
+          elif metric == "flesh":
+
+               current_document = cm.TFRE(text)
+               with open("./JSON_Metrics/Flesh.json","r") as file:
+                    data = json.load(file)
+                    data["metric"]="The Flesh Reading Ease Score"
+                    data["current_dcoument"] = current_document
+               return data
+
+
+
+
 
           else:
                raise HTTPException(status_code=400, detail="Metric not supported")
