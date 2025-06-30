@@ -2,6 +2,7 @@ import nltk
 import re
 from lexicalrichness import LexicalRichness
 from npl_models import nlp #Natural Language Processing models
+from readability import Readability
 
 #print(cupy.show_config())
 
@@ -120,11 +121,16 @@ def calculateTTRRoot(texto):
     lex=LexicalRichness(texto)
     return lex.rttr
 
-def calculateTTRCorregido(texto):
+def calculateTTRCorrected(texto):
     lex=LexicalRichness(texto)
     return lex.cttr
   
+#//////////////////////////////////////////////////////////////////////////////////////////////////////
+#*Redeability metrics
 
+def TFRE(texto):
+    r = Readability(texto)
+    return r.flesch().score
 #/////////////////////////////////////////////////////////////////////////////////////////////////////
 """
 #*Preliminar analysis
