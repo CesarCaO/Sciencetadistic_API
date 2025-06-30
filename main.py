@@ -61,11 +61,7 @@ def metrics(metric: str, file: UploadFile):
                     data["metric"]="The Flesh Reading Ease Score"
                     data["current_dcoument"] = current_document
                return data
-
-
-
-
-
+          
           else:
                raise HTTPException(status_code=400, detail="Metric not supported")
           
