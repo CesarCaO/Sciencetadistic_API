@@ -6,6 +6,7 @@ from nltk import word_tokenize, sent_tokenize
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
 import os
 import fitz
+import MetricsV4 as mtrs
 
 
 pdfs = "./PDFs/test_papers/"
@@ -13,19 +14,19 @@ langFile = os.listdir(pdfs)
 text=""
 """
 #*Open the two datasets with PeerRead (df1) and ASAP (df2)
-#path_1="./CSVs/INCOMPLETO_BOW_Completo.csv"
+path_1="./CSVs/INCOMPLETO_BOW_Completo.csv"
 path_2="./CSVs/Particiones_COMPLETO.csv"
 
-#df1=pd.read_csv(path_1, encoding="utf-8")
+df1=pd.read_csv(path_1, encoding="utf-8")
 df2=pd.read_csv(path_2, encoding="utf-8")
 
-#print("Dataset 1",df1.columns)
-#print(df1["Conferencia"].unique())
+print("Dataset 1",df1.columns)
+print(df1["Conferencia"].unique())
 
 print("Dataset 2",df2.columns)
 print(df2["Conferencia"].unique())
-"""
 
+"""
 
 # === Funciones auxiliares ===
 def frases(pdfs, pronombres, x, vocabulario, caracteristicas):
@@ -179,7 +180,7 @@ with open(R"./predictive_model/2_EXPEI_ASAP.pkl","rb") as file2:
     F1: {f1_score(y_te, y_pred, average='macro') * 100:.4f}%")
 """
 
-#* Testing models with 8 real papers
+#* Testing models with real papers
 
 
 
@@ -209,6 +210,9 @@ for file in model_files:
         for page in doc:
             text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
         doc.close()
+
+        text = mtrs.removeReferences(text)
+        text = mtrs.cleanText(text)
 
         x_test =[text.lower()]
         print("Vectorizing...")
