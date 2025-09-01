@@ -11,9 +11,6 @@ app = FastAPI() #objeto que instancia Fast API
 
 
 
-@app.get("/")#Cuando alguien llame a ala ruta raíz entonces haz lo que viene en la línea inmediata
-def index():
-     return {"saludo": "HOLA MUNDO"} #fast api ya jsonifica el retorno
 
 @app.post("/metrics")
 def metrics(metric: str, file: UploadFile):
@@ -94,4 +91,22 @@ def tagged_lexical_density_document(file: UploadFile):
           logger.exception("Error processing the PDF file")
           raise HTTPException(status_code=500, detail=str(e))  
 """
+@app.post("/ia_model/")
+def predicitve_model(file: UploadFile):
+
+     try:
+          file.file.seek(0)  # Reset the file pointer to the beginning
+          doc = fitz.open(stream=file.file.read(), filetype="pdf")
+          text = ""
+          for page in doc:
+               text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
+          
+          text = cm.removeReferences(text)
+          text = cm.cleanText(text)
+
+          x_test=[text.lower()]
+     
+     except Exception as e:
+          logger.exception("Error processing the PDF file")
+          raise HTTPException(status_code=500, detail=str(e))
 
