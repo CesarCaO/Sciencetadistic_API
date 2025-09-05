@@ -15,27 +15,27 @@ class JSONTemplateManager:
           self.templeate_path = Path(template_path)
           self._templates = None
 
-          @lru_cache
-          def get_templates(self) -> Dict[str, Dict]:
-               if self._templates is None:
-                    templates={}
-                    template_files={
-                         "ttr": "TTR.json",
-                         "root_ttr": "Root_TTR.json", 
-                         "ttr_corrected": "Corrected_TTR.json",
-                         "flesh": "Flesh.json"
-                    }
+     @lru_cache()
+     def get_templates(self) -> Dict[str, Dict]:
+          if self._templates is None:
+               templates={}
+               template_files={
+                    "ttr": "TTR.json",
+                    "root_ttr": "Root_TTR.json", 
+                    "ttr_corrected": "Corrected_TTR.json",
+                    "flesh": "Flesh.json"
+               }
 
-                    for key, filename in template_files.items():
-                         try:
-                              with open(self.template_path / filename, "r") as file:
-                                   templates[key] = json.load(file)
-                         except FileNotFoundError:
-                              logger.warning(f"Plantilla {filename} not found")
-                              templates[key] = {"metric": key, "error": "Template not found"}
-            
-                    self._templates = templates
-               return self._templates
+               for key, filename in template_files.items():
+                    try:
+                         with open(self.template_path / filename, "r") as file:
+                              templates[key] = json.load(file)
+                    except FileNotFoundError:
+                         logger.warning(f"Plantilla {filename} not found")
+                         templates[key] = {"metric": key, "error": "Template not found"}
+          
+               self._templates = templates
+          return self._templates
 
 
 template_manager = JSONTemplateManager(template_path="./JSON_Metrics")
