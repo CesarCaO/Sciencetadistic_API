@@ -1,52 +1,17 @@
 
-from functools import lru_cache
-from typing import Dict
 import MetricsV3 as cm
-from fastapi import Depends, FastAPI, Path, UploadFile, HTTPException
+from fastapi import FastAPI, UploadFile, HTTPException
 import json
 import fitz
 import logging
 
 
 logger=logging.getLogger("uvicorn.error")
-
-class JSONTemplateManager:
-     def __init__(self, template_path: str = "./JSON_Metrics"):
-          self.templeate_path = Path(template_path)
-          self._templates = None
-
-     @lru_cache()
-     def get_templates(self) -> Dict[str, Dict]:
-          if self._templates is None:
-               templates={}
-               template_files={
-                    "ttr": "TTR.json",
-                    "root_ttr": "Root_TTR.json", 
-                    "ttr_corrected": "Corrected_TTR.json",
-                    "flesh": "Flesh.json"
-               }
-
-               for key, filename in template_files.items():
-                    try:
-                         with open(self.template_path / filename, "r") as file:
-                              templates[key] = json.load(file)
-                    except FileNotFoundError:
-                         logger.warning(f"Plantilla {filename} not found")
-                         templates[key] = {"metric": key, "error": "Template not found"}
-          
-               self._templates = templates
-          return self._templates
-
-
-template_manager = JSONTemplateManager(template_path="./JSON_Metrics")
 app = FastAPI() #objeto que instancia Fast API
 
 
-#Para mantere la API sin estado, como lo dictamina las reglas de creación de una API REST hay que cargar los JSON una sola vez y mantenerlos en memoria
-
-
 @app.post("/metrics")
-def metrics(metric: str, file: UploadFile, templates: Dict[str, Dict] = Depends(template_manager.get_templates)):
+def metrics(metric: str, file: UploadFile):
      try:
           metric = metric.lower()
           file.file.seek(0)  # Reset the file pointer to the beginning
@@ -55,36 +20,46 @@ def metrics(metric: str, file: UploadFile, templates: Dict[str, Dict] = Depends(
           for page in doc:
                text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
           
-          if metric not in templates:
-               raise HTTPException(status_code= 400, detail=f"Metric not supported")
 
           if metric =="ttr":
 
                current_document=cm.calculateTTR(text)
-              
+               with open("./JSON_Metrics/TTR.json", "r") as file:
+                    data = json.load(file)
+                    data['metric'] = "TTR"
+                    data['current_document']= current_document 
+               return data
           
           elif metric == "root_ttr":
 
                current_document=cm.calculateTTRRoot(text)
-              
+               with open("./JSON_Metrics/Root_TTR.json","r") as file:
+                    data = json.load(file)
+                    data['metric'] = "RootTTR"
+                    data['current_document']= current_document
+               return data
 
           elif metric == "ttr_corrected":
 
                current_document = cm.calculateTTRCorrected(text)
-               
+               with open("./JSON_Metrics/Corrected_TTR.json","r") as file:
+                    data = json.load(file)
+                    data['metric'] = "CorrectedTTR"
+                    data['current_document']= current_document
+               return data
           
           elif metric == "flesh":
 
                current_document = cm.TFRE(text)
-               
+               with open("./JSON_Metrics/Flesh.json","r") as file:
+                    data = json.load(file)
+                    data["metric"]="The Flesh Reading Ease Score"
+                    data["current_dcoument"] = current_document
+               return data
           
           else:
                raise HTTPException(status_code=400, detail="Metric not supported")
           
-          response_data = templates[metric].copy()
-          response_data['current_document'] = current_document
-          
-          return response_data
 
      except Exception as e:
           logger.exception("Error processing the PDF file")
