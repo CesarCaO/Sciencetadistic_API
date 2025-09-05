@@ -81,8 +81,14 @@ def removeReferences(texto):
     else:
         return textoLower
 
-#////////////////////////////////////////////////////////////////////////////////////////////////////
+def getEasyWords():#Función para obtener las 3000 palabras más faciles del idioma inglés
+    #path = os.path.join(os.path.dirname(__file__),"txts", "3000easyWords.txt")
+    path="./txts/3000easyWords.txt"
+    with open(path,encoding="utf-8") as f:
+        return tokenizeWords(f.read())
 
+#////////////////////////////////////////////////////////////////////////////////////////////////////
+"""
 def calculateLexicalDensity(texto):
 
     list_Tokenized=tokenizeWords(texto)
@@ -100,8 +106,20 @@ def calculateLexicalDensity(texto):
 
     DL=len(uniqueWords)/(float(len(list_Tokenized)))# Es necesario float para evitar una division entera
     return DL
+"""
 
+def calculateSophistication(texto):
+    textTokenized=tokenizeWords(texto)
+    functionWords=getFunctionWords(texto)
+    listEasyWords=getEasyWords()
+    listLexWords=[w for w in textTokenized if((w.lower()not in functionWords) and w.isalpha()==True)]
+    print("Unidades lexicas",listLexWords)
 
+    listHardWords=[w.lower() for w in textTokenized if(((w.lower() not in listEasyWords) and (w.lower() in listLexWords)) and (len(w)>3))]
+    print("Palabras sofisticadas: ",len(listHardWords))
+
+    sofisticidad=len(listHardWords)/float(listLexWords)
+    return sofisticidad
 
 def calculateTaggedLexicalDensity(texto):
     tokenized=tokenizeWords(texto)
