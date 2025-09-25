@@ -121,7 +121,7 @@ def calculateSophistication(texto):
     sofisticidad=len(listHardWords)/float(listLexWords)
     return sofisticidad
 
-def calculateTaggedLexicalDensity(texto):
+def calculateLexicalDensity(texto):
     tokenized=tokenizeWords(texto)
     tagged=wordsTagged(texto)
     print("Palabras etiquetadas: ",len(tagged))

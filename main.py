@@ -1,5 +1,5 @@
 
-import MetricsV3 as cm
+import MetricsV4 as cm
 from fastapi import FastAPI, UploadFile, HTTPException
 import json
 import fitz
@@ -48,6 +48,7 @@ def metrics(metric: str, file: UploadFile):
                     data['current_document']= current_document
                return data
           
+          
           elif metric == "flesh":
 
                current_document = cm.TFRE(text)
@@ -66,30 +67,9 @@ def metrics(metric: str, file: UploadFile):
           raise HTTPException(status_code=500, detail=str(e))
 
 
-"""
-@app.post("/tagged_lexical_density/")
-def tagged_lexical_density_document(file: UploadFile):
-     try:
-          file.file.seek(0)
-          doc= fitz.open(stream=file.file.read(), filetype="pdf")
-          text=""
-          for page in doc:
-               text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
+     raise HTTPException(status_code=500, detail=str(e))  
 
-          tagged_lexical_density=m.calculateTaggedLexicalDensity(text)#*
-
-          with open("./JSON_Metrics/Lexical_density.json", "r") as file:
-               data=json.load(file)
-
-               data['current_document']=tagged_lexical_density#*
-
-          return data
-
-     except Exception as e:
-          logger.exception("Error processing the PDF file")
-          raise HTTPException(status_code=500, detail=str(e))  
-"""
-@app.post("/ia_model/")
+@app.post("/model/")
 def predicitve_model(file: UploadFile):
 
      try:
