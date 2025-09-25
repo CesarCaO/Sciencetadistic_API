@@ -179,3 +179,5 @@ CSVs/
 #PDF Files
 PDFs/
 predictive_model/
+test/ExtractText_phase
+test/phase_XML
