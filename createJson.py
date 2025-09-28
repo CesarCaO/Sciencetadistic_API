@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-import MetricsV3 as m 
+import Metrics_Versions.MetricsV4 as m 
 from tqdm.auto import tqdm
 
 file_path="./CSVs/ReadeabilityPapers_CSV.csv"
@@ -16,6 +16,8 @@ df_aceptados=df[df["Accepted"]==1]
 df_rechazados=df[df["Accepted"]==0]
 #df_rechazados=df_rechazados.head(1000)
 #print(df_rechazados)
+
+
 
 
 """
@@ -68,7 +70,7 @@ with open(save_path+'Corrected_TTR.json', "w", encoding="utf-8") as file:
     file.close()
 """
 
-
+'''
 #*Flesch
 
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
@@ -84,3 +86,4 @@ ttr={
 with open(save_path+'Flesh.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
+'''
