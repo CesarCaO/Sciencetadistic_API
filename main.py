@@ -1,9 +1,14 @@
 
+import io
 from Metrics_Versions import MetricsV4 as cm
-from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi import FastAPI, UploadFile, HTTPException, File, Form, status
 import json
 import fitz
 import logging
+
+from PyPDF2 import PdfReader, PdfWriter
+import magic
+from typing import Annotated
 
 #Configuración de logging
 logger=logging.getLogger("uvicorn.error")
@@ -11,22 +16,95 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 app = FastAPI() #objeto que instancia Fast API
 
 
-#Configuración de seguridad
-#MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB límite de tamaño
-#ALLOWED_MIME_TYPES = {"application/pdf"}
 
+#SEGURIDAD PERIMETRAL
 
+#Configuración del tamaño de PDF
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB límite de tamaño
+ALLOWED_MIME_TYPES = {"application/pdf"}
 
+#Validar tamaño del documento
+async def validate_file_size(file:UploadFile) -> None:
+     file.file.seek(0,2)#Ir al final del archivo
+     file_size = file.file.tell()
+     file.file.seek(0)
 
-@app.post("/metrics")
-def metrics(metric: str, file: UploadFile):
+     if file_size > MAX_FILE_SIZE:
+          raise HTTPException(
+               status_code= status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+               detail = f"El archivo excede el tamaño máximo permitido de {MAX_FILE_SIZE} bytes"
+          )
+#Validar tipo de documento
+async def validate_pdf_file(file:UploadFile) -> bytes:
+     #Leer los primeros bytes sea un PDF
+     content = await file.read(2048)
+     file_type = magic.from_buffer(content, mime=True)
+
+     if file_type not in ALLOWED_MIME_TYPES:
+          raise HTTPException(
+               status_code= status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+               detail="El archivo debe ser un PDF válido"
+          )
+     
+     #Leer el resto del archivo
+     remaining_content = await file.read()
+     full_content = content + remaining_content
+     await file.seek
+
+     return full_content
+     
+def sanitize_pdf(content: bytes) -> bytes:
+     #Eliminar metadaos potencialemente maliciosos del PDF
+
      try:
-          metric = metric.lower()
-          file.file.seek(0)  # Reset the file pointer to the beginning
-          doc = fitz.open(stream=file.file.read(), filetype="pdf")
+          reader = PdfReader(io.BytesIO(content))
+          writer = PdfWriter()
+
+          for page in reader.pages:
+               writer.add_page(page)
+
+     #Eliminando metadatos
+          writer.add_metadata({})
+
+          output = io.BytesIO()
+          writer.write(output)
+          return output.getvalue()
+     
+     except Exception as e:
+          logger.error(f"Error en sanitización de PDF: {str(e)}")
+          raise HTTPException(
+               status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+               detail="El PDF no pudo ser procesado por contener contenido inválido"
+          )
+
+
+def extract_text_from_pdf(content: bytes) -> str:
+     "Extracción de texto de un PDF"
+     try:
+          doc = fitz.open(stream=content, filetype="pdf")
           text = ""
           for page in doc:
                text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
+          
+          return text
+
+     except Exception as e:
+          logger.error(f"Error al extraer texto del PDF: {str(e)}")
+          raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="El PDF no pudo ser procesado y no se pudo extraer el texto"
+        )
+
+
+@app.post("/metrics")
+async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular: lexical_density, sophistication, ttr, root_ttr, ttr_corrected, flesh, kincaid, fog, smog")], file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
+     try:
+          
+          await validate_file_size(file)
+          file_content = await validate_pdf_file(file)
+          sanitize_content = sanitize_pdf(file_content)
+          text = extract_text_from_pdf(sanitize_content)
+          metric = metric.lower()
           
         
           if metric == "lexical_density":
@@ -115,13 +193,14 @@ def metrics(metric: str, file: UploadFile):
           else:
                raise HTTPException(status_code=400, detail="Metric not supported")
           
-
+     except HTTPException as he:
+          raise he
      except Exception as e:
           logger.exception("Error processing the PDF file")
-          raise HTTPException(status_code=500, detail=str(e))
+          raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-     raise HTTPException(status_code=500, detail=str(e))  
+    
 
 @app.post("/model/")
 def predicitve_model(file: UploadFile):

@@ -6,7 +6,7 @@ from nltk import word_tokenize, sent_tokenize
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
 import os
 import fitz
-import MetricsV4 as mtrs
+import Metrics_Versions.MetricsV4 as mtrs
 
 
 pdfs = "./PDFs/test_papers/"
