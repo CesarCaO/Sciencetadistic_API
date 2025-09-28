@@ -49,7 +49,7 @@ async def validate_pdf_file(file:UploadFile) -> bytes:
      #Leer el resto del archivo
      remaining_content = await file.read()
      full_content = content + remaining_content
-     await file.seek(0)
+     file.file.seek(0)
 
      return full_content
      
@@ -160,7 +160,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                with open("./JSON_Metrics/Flesh.json","r") as file:
                     data = json.load(file)
                     data["metric"]="The Flesh Reading Ease Score"
-                    data["current_dcoument"] = current_document
+                    data["current_document"] = current_document
                return data
 
           elif metric == "kincaid":
@@ -169,7 +169,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                with open("./JSON_Metrics/Kincaid.json","r") as file:
                     data = json.load(file)
                     data["metric"]="The Flesh-Kincaid Reading Ease Score"
-                    data["current_dcoument"] = current_document
+                    data["current_document"] = current_document
                return data
           
           elif metric == "fog":
@@ -178,7 +178,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                with open("./JSON_Metrics/FogIndex.json","r") as file:
                     data = json.load(file)
                     data["metric"]="The Fog Index"
-                    data["current_dcoument"] = current_document
+                    data["current_document"] = current_document
                return data
           
           elif metric == "smog":
@@ -187,7 +187,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                with open("./JSON_Metrics/SMOG.json","r") as file:
                     data = json.load(file)
                     data["metric"]="The SMOG Index"
-                    data["current_dcoument"] = current_document
+                    data["current_document"] = current_document
                return data
 
           else:
