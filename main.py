@@ -49,7 +49,7 @@ async def validate_pdf_file(file:UploadFile) -> bytes:
      #Leer el resto del archivo
      remaining_content = await file.read()
      full_content = content + remaining_content
-     await file.seek
+     await file.seek(0)
 
      return full_content
      
