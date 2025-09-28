@@ -20,6 +20,8 @@ def metrics(metric: str, file: UploadFile):
           for page in doc:
                text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
           
+        
+          
 
           if metric =="ttr":
 
