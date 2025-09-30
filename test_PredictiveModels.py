@@ -4,11 +4,9 @@ import pickle
 import re, time
 from nltk import word_tokenize, sent_tokenize
 from sklearn.metrics import accuracy_score, f1_score, classification_report, confusion_matrix
-import os
-import fitz
-import Metrics_Versions.MetricsV4 as mtrs
 
 
+"""
 pdfs = "./PDFs/test_papers/"
 langFile = os.listdir(pdfs)
 text=""
@@ -17,16 +15,21 @@ text=""
 path_1="./CSVs/INCOMPLETO_BOW_Completo.csv"
 path_2="./CSVs/Particiones_COMPLETO.csv"
 
-df1=pd.read_csv(path_1, encoding="utf-8")
-df2=pd.read_csv(path_2, encoding="utf-8")
+path_full = "./CSVs/CSVsUnidos.csv"
+print("Leyendo Datasets")
+#df1=pd.read_csv(path_1, encoding="utf-8")
+#df2=pd.read_csv(path_2, encoding="utf-8")
 
-print("Dataset 1",df1.columns)
-print(df1["Conferencia"].unique())
+dfFull = pd.read_csv(path_full, encoding="utf-8")
 
-print("Dataset 2",df2.columns)
-print(df2["Conferencia"].unique())
+#print("Dataset 1",df1.columns)
+#print(df1["Conferencia"].unique())
 
-"""
+#print("Dataset 2",df2.columns)
+#print(df2["Conferencia"].unique())
+
+print("Dataset 3",dfFull.columns)
+print(dfFull["Conferencia"].unique())
 
 # === Funciones auxiliares ===
 def frases(pdfs, pronombres, x, vocabulario, caracteristicas):
@@ -176,26 +179,16 @@ with open(R"./predictive_model/2_EXPEI_ASAP.pkl","rb") as file2:
     print("Matriz de confusión:")
     print(confusion_matrix(y_te, y_pred))
     print(f"Accuracy: {accuracy_score(y_te, y_pred) * 100:.4f}%")
-    print(f"Macro 
-    F1: {f1_score(y_te, y_pred, average='macro') * 100:.4f}%")
+    print(f"Macro F1: {f1_score(y_te, y_pred, average='macro') * 100:.4f}%")
 """
 
-#* Testing models with real papers
 
 
+with open(R"./predictive_model/2_EXPEI_ArXivLG_PR.pkl","rb") as file3:
+    print("Cargando Pickle")
+    data = pickle.load(file3)
 
-model_files=[
-    r"./predictive_model/2_EXPEI_PEER_READ.pkl",
-    r"./predictive_model/2_EXPEI_ASAP.pkl"
-]
-
-for file in model_files:
-    print(f"\n Loading model from: {file}")
-
-    with open(file,"rb") as f:
-        print("Reading Model")
-        data = pickle.load(f)
-    
+    print("Configurando modelo")
     model = data['model']
     vectorizer = data['vectorizer']
     label_encoder = data['label_encoder']
@@ -203,30 +196,40 @@ for file in model_files:
     caracteristicas = data['caracteristicas']
     pronombres = ['we', 'our', 'us']
 
-    for pdf in langFile:
-        pdf_path=os.path.join(pdfs,pdf)
-        doc = fitz.open(pdf_path)
-        print("Extracting text")
-        for page in doc:
-            text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
-        doc.close()
+    #Loading df2 data
+    print("Obteniendo datos de testeo del CSV")
+    print("Loading testing data")
+    test_dfFull=dfFull[dfFull["Particion"]=="test"].reset_index(drop=True)
+    print("La cantidad de datos de testeo son: ",len(test_dfFull))
 
-        text = mtrs.removeReferences(text)
-        text = mtrs.cleanText(text)
+    print("Obteniendo textos")
+    x_test = test_dfFull['Texto Completo'].str.lower().apply(str).values
+    print("Obteniendo textos aceptados")
+    y_test = test_dfFull['Accepted']
+    print("Aplicando transformadores")
+    y_te = label_encoder.transform(y_test)
 
-        x_test =[text.lower()]
-        print("Vectorizing...")
-        X_test = vectorizer.transform(x_test)
+    X_test = vectorizer.transform(x_test)
 
-        print("Calculating Expei")
-        fpT, fnpT, contadorPT, contadorNPT = frases(x_test, pronombres, X_test, vocabulario, caracteristicas)
-        peit, _ = PeiNei(contadorPT, fpT, contadorNPT, fnpT, X_test)
-        expei_test = expei_func(X_test, peit)
+     # === Calcular EXPEI ===
+    print("Calculating Expei")
+    fpT, fnpT, contadorPT, contadorNPT = frases(x_test, pronombres, X_test, vocabulario, caracteristicas)
+    peit, _ = PeiNei(contadorPT, fpT, contadorNPT, fnpT, X_test)
+    expei_test = expei_func(X_test, peit)
 
-        print("Making prediction...")
-        y_pred = model.predict(expei_test)
+    print("Evaluating")
 
-        print(f"{pdf_path}  prediction: ", y_pred)
+    # === Evaluación ===
+    y_pred = model.predict(expei_test)
+
+    print("\n--- RESULTADOS EN TEST ---")
+    print(classification_report(y_te, y_pred, digits=3))
+    print("Matriz de confusión:")
+    print(confusion_matrix(y_te, y_pred))
+    print(f"Accuracy: {accuracy_score(y_te, y_pred) * 100:.4f}%")
+    print(f"Macro F1: {f1_score(y_te, y_pred, average='macro') * 100:.4f}%")
+
+
 
 
   
