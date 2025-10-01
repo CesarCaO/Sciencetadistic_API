@@ -17,9 +17,20 @@ df_rechazados=df[df["Accepted"]==0]
 #df_rechazados=df_rechazados.head(1000)
 #print(df_rechazados)
 
+#Densidad lexica
+tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
+dl_accepted = df_aceptados['Texto Completo'].progress_apply(m.calculateLexicalDensity).tolist()
+tqdm.pandas(desc="Progreso de procesamiento de Rechazados")
+dl_rejected = df_rechazados["Texto Completo"].progress_apply(m.calculateLexicalDensity).tolist()
 
+dl = {
+    'Accepted': dl_accepted,
+    'Rejected': dl_rejected
+}
 
-
+with open(save_path+'/Lexical_Density.json', "w", encoding="utf-8") as file:
+    json.dump(dl,file, indent=4)
+    file.close()
 """
 #TTR
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
