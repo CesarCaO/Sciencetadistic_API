@@ -4,6 +4,7 @@ from lexicalrichness import LexicalRichness
 from npl_models import nlp #Natural Language Processing models
 from readability import Readability
 
+
 #print(cupy.show_config())
 
 """
@@ -85,7 +86,9 @@ def getEasyWords():#Función para obtener las 3000 palabras más faciles del idi
     #path = os.path.join(os.path.dirname(__file__),"txts", "3000easyWords.txt")
     path="./txts/3000easyWords.txt"
     with open(path,encoding="utf-8") as f:
-        return tokenizeWords(f.read())
+        easyWords = tokenizeWords(f.read())
+        f.close()
+        return easyWords
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////
 """
@@ -111,24 +114,25 @@ def calculateLexicalDensity(texto):
 def calculateSophistication(texto):
     textTokenized=tokenizeWords(texto)
     functionWords=getFunctionWords(texto)
-    listEasyWords=getEasyWords()
+    listEasyWords=getEasyWords()#Obtener las lista de palabras fáciles del idióma inglés
+   
     listLexWords=[w for w in textTokenized if((w.lower()not in functionWords) and w.isalpha()==True)]
-    print("Unidades lexicas",listLexWords)
+    #print("Unidades lexicas",listLexWords)
 
     listHardWords=[w.lower() for w in textTokenized if(((w.lower() not in listEasyWords) and (w.lower() in listLexWords)) and (len(w)>3))]
-    print("Palabras sofisticadas: ",len(listHardWords))
+    #print("Palabras sofisticadas: ",len(listHardWords))
 
-    sofisticidad=len(listHardWords)/float(listLexWords)
+    sofisticidad=(len(listHardWords)/float(listLexWords))*100
     return sofisticidad
 
 def calculateLexicalDensity(texto):
     tokenized=tokenizeWords(texto)
     tagged=wordsTagged(texto)
-    print("Palabras etiquetadas: ",len(tagged))
-    print("Palabras totales: ",len(tokenized))
+    #print("Palabras etiquetadas: ",len(tagged))
+    #print("Palabras totales: ",len(tokenized))
     uniqueTagged=set(tagged)
-    print("Palabras etiquetadas únicas: ",uniqueTagged)
-    DL_tagged=len(uniqueTagged)/float(len(tokenized))
+    #print("Palabras etiquetadas únicas: ",uniqueTagged)
+    DL_tagged=(len(uniqueTagged)/float(len(tokenized)))*100
     return DL_tagged
 
 
