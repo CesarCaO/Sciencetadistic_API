@@ -2,7 +2,7 @@ import nltk
 import re
 from lexicalrichness import LexicalRichness
 #pip install lexicalrichness
-from npl_models import nlp #Natural Language Processing models
+from src.npl_models import nlp #Natural Language Processing models
 from readability import Readability
 #pip install py-readability-metrics
 
