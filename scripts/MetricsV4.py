@@ -1,7 +1,7 @@
 import nltk
 import re
 from lexicalrichness import LexicalRichness
-from npl_models import nlp #Natural Language Processing models
+from src.npl_models import nlp #Natural Language Processing models
 from readability import Readability
 
 
@@ -84,7 +84,7 @@ def removeReferences(texto):
 
 def getEasyWords():#Función para obtener las 3000 palabras más faciles del idioma inglés
     #path = os.path.join(os.path.dirname(__file__),"txts", "3000easyWords.txt")
-    path="./txts/3000easyWords.txt"
+    path="./data/3000easyWords.txt"
     with open(path,encoding="utf-8") as f:
         easyWords = tokenizeWords(f.read())
         f.close()
@@ -122,7 +122,7 @@ def calculateSophistication(texto):
     listHardWords=[w.lower() for w in textTokenized if(((w.lower() not in listEasyWords) and (w.lower() in listLexWords)) and (len(w)>3))]
     #print("Palabras sofisticadas: ",len(listHardWords))
 
-    sofisticidad=(len(listHardWords)/float(listLexWords))*100
+    sofisticidad=(len(listHardWords)/float(len(listLexWords)))*100
     return sofisticidad
 
 def calculateLexicalDensity(texto):

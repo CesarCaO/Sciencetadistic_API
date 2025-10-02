@@ -1,6 +1,6 @@
 import pandas as pd
 import json
-import Metrics_Versions.MetricsV4 as m 
+import scripts.MetricsV4 as m 
 from tqdm.auto import tqdm
 
 file_path="./CSVs/ReadeabilityPapers_CSV.csv"
@@ -16,7 +16,7 @@ df_aceptados=df[df["Accepted"]==1]
 df_rechazados=df[df["Accepted"]==0]
 #df_rechazados=df_rechazados.head(1000)
 #print(df_rechazados)
-
+"""
 #Densidad lexica
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
 dl_accepted = df_aceptados['Texto Completo'].progress_apply(m.calculateLexicalDensity).tolist()
@@ -30,6 +30,21 @@ dl = {
 
 with open(save_path+'/Lexical_Density.json', "w", encoding="utf-8") as file:
     json.dump(dl,file, indent=4)
+    file.close()
+"""
+
+tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
+sf_accepted = df_aceptados['Texto Completo'].progress_apply(m.calculateSophistication).tolist()
+tqdm.pandas(desc="Progreso de procesamiento de Rechazados")
+sf_rejected = df_rechazados["Texto Completo"].progress_apply(m.calculateSophistication).tolist()
+
+sf = {
+    'Accepted': sf_accepted,
+    'Rejected': sf_rejected
+}
+
+with open(save_path+'/Sophistication.json', "w", encoding="utf-8") as file:
+    json.dump(sf,file, indent=4)
     file.close()
 """
 #TTR
