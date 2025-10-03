@@ -3,7 +3,7 @@ import spacy
 
 nltk.download('punkt', quiet=True)
 nltk.download('punkt_tab', quiet=True)
-#spacy.cli.download("en_core_web_sm")
+spacy.cli.download("en_core_web_sm")
 #spacy.cli.download("es_core_news_sm")
 
 # Configuración CORRECTA del modelo
