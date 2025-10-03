@@ -4,7 +4,7 @@ import numpy as np
 import math
 import syllapy
 import ast
-from src.npl_models import npl #Natural Language Processing models
+from config.nlp_models import npl #Natural Language Processing models
 import re
 
 def wordsTagged(texto):#*Funcion para etiquetar las palabras y solo permitir las que tienen un valor lexico

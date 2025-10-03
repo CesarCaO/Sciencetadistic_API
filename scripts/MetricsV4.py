@@ -1,7 +1,7 @@
 import nltk
 import re
 from lexicalrichness import LexicalRichness
-from src.npl_models import nlp #Natural Language Processing models
+from config.nlp_models import nlp#Natural Language Processing models
 from readability import Readability
 
 
@@ -46,7 +46,6 @@ def wordsTagged(texto):#*Funcion para etiquetar las palabras y solo permitir las
     tagged=[token.text.lower() for token in doc if token.pos_ in ["NOUN", "VERB", "ADJ", "ADV"]]
     return set(tagged)
 def getFunctionWords(texto):#Función para obtener las function words
-  
   info=nlp(texto)
   functionwords=[token.text.lower() for token in info if token.is_stop]
   setfunctionwords=set(functionwords)
@@ -139,16 +138,16 @@ def calculateLexicalDensity(texto):
 def calculateTTR(texto):
    
     lex=LexicalRichness(texto)
-    return lex.ttr
+    return (lex.ttr)*100
 
 
 def calculateTTRRoot(texto):
     lex=LexicalRichness(texto)
-    return lex.rttr
+    return (lex.rttr)
 
 def calculateTTRCorrected(texto):
     lex=LexicalRichness(texto)
-    return lex.cttr
+    return (lex.cttr)
   
 #//////////////////////////////////////////////////////////////////////////////////////////////////////
 #*Redeability metrics
