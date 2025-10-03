@@ -6,7 +6,7 @@ import syllapy
 import ast
 import re
 from lexicalrichness import LexicalRichness
-from src.npl_models import npl #Natural Language Processing models
+from config.nlp_models import npl #Natural Language Processing models
 
 #print(cupy.show_config())
 

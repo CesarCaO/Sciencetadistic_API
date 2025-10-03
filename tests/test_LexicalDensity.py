@@ -1,4 +1,4 @@
-from src.npl_models import nlp
+from config.nlp_models import nlp
 from TRUNAJOD import surface_proxies
 import fitz
 import MetricsV3 as mtr
