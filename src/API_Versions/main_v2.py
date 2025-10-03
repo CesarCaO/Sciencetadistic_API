@@ -1,3 +1,4 @@
+
 import io
 from scripts import MetricsV4 as cm
 from fastapi import FastAPI, UploadFile, HTTPException, File, Form, status
@@ -95,7 +96,6 @@ def extract_text_from_pdf(content: bytes) -> str:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="El PDF no pudo ser procesado y no se pudo extraer el texto"
         )
-
 
 
 @app.post("/metrics")
@@ -222,3 +222,4 @@ def predicitve_model(file: UploadFile):
      except Exception as e:
           logger.exception("Error processing the PDF file")
           raise HTTPException(status_code=500, detail=str(e))
+

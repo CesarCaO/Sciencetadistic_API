@@ -2,6 +2,7 @@ import nltk
 import re
 from lexicalrichness import LexicalRichness
 from config.nlp_models import nlp#Natural Language Processing models
+from config.EasyFunctionWord import STOP_WORDS,EASY_WORDS
 from readability import Readability
 
 
@@ -45,19 +46,18 @@ def wordsTagged(texto):#*Funcion para etiquetar las palabras y solo permitir las
         #print(f"{token.text}-->{token.pos_}")
     tagged=[token.text.lower() for token in doc if token.pos_ in ["NOUN", "VERB", "ADJ", "ADV"]]
     return set(tagged)
+
 def getFunctionWords(texto):#Función para obtener las function words
   info=nlp(texto)
   functionwords=[token.text.lower() for token in info if token.is_stop]
   setfunctionwords=set(functionwords)
+
   return setfunctionwords
 
 
 def tokenizeWords(texto):#Separador de palabras
     listPalabras=nltk.word_tokenize(texto)
-    #Split the words from the not alphabetic characters
-    listPalabrasValidadas=[token for token in listPalabras if token.isalpha()]
-    #print("Numero de palabras: ",len(listPalabrasValidadas))
-    return listPalabrasValidadas
+    return [token for token in listPalabras if token.isalpha()]
 
 
 def removeReferences(texto):
@@ -81,13 +81,13 @@ def removeReferences(texto):
     else:
         return textoLower
 
-def getEasyWords():#Función para obtener las 3000 palabras más faciles del idioma inglés
+#def getEasyWords():#Función para obtener las 3000 palabras más faciles del idioma inglés
     #path = os.path.join(os.path.dirname(__file__),"txts", "3000easyWords.txt")
-    path="./data/3000easyWords.txt"
-    with open(path,encoding="utf-8") as f:
-        easyWords = tokenizeWords(f.read())
-        f.close()
-        return easyWords
+    #path="./data/3000easyWords.txt"
+    #with open(path,encoding="utf-8") as f:
+        #easyWords = tokenizeWords(f.read())
+        #f.close()
+        #return easyWords
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////
 """
@@ -111,18 +111,23 @@ def calculateLexicalDensity(texto):
 """
 
 def calculateSophistication(texto):
-    textTokenized=tokenizeWords(texto)
-    functionWords=getFunctionWords(texto)
-    listEasyWords=getEasyWords()#Obtener las lista de palabras fáciles del idióma inglés
+    tokens=tokenizeWords(texto)
+    
+    tokens_lower = [w.lower() for w in tokens]
+    tokens_lower_set = set(tokens_lower)
    
-    listLexWords=[w for w in textTokenized if((w.lower()not in functionWords) and w.isalpha()==True)]
-    #print("Unidades lexicas",listLexWords)
+    lex_Words= [w for w in tokens_lower if w not in STOP_WORDS]
+    
 
-    listHardWords=[w.lower() for w in textTokenized if(((w.lower() not in listEasyWords) and (w.lower() in listLexWords)) and (len(w)>3))]
-    #print("Palabras sofisticadas: ",len(listHardWords))
-
-    sofisticidad=(len(listHardWords)/float(len(listLexWords)))*100
-    return sofisticidad
+    if not lex_Words:  # Evitar división por cero
+        return 0.0
+    
+    hard_words_count = sum(
+        1 for w in lex_Words 
+        if w not in EASY_WORDS and len(w) > 3
+    )
+    sophistication = (hard_words_count / len(lex_Words)) * 100
+    return sophistication
 
 def calculateLexicalDensity(texto):
     tokenized=tokenizeWords(texto)
