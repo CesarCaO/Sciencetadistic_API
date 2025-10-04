@@ -112,7 +112,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
           if metric == "lexical_density":
 
                current_document = cm.calculateLexicalDensity(text)
-               with open("./JSON_Metrics/Lexical_Density.json", "r") as file:
+               with open("./JSON_Metrics/Lexical_density.json", "r") as file:
                     data = json.load(file)
                     data['metric'] = "Lexical_Density"
                     data['current_document'] = current_document
