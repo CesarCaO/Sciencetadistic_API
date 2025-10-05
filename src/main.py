@@ -228,8 +228,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
             del file_content
         if sanitize_content is not None:
             del sanitize_content
-        if text is not None:
-            del text
+
         
         # Forzar recolección de basura
         import gc
