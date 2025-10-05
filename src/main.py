@@ -1,4 +1,6 @@
 import io
+
+from fastapi.responses import HTMLResponse
 from scripts import MetricsV4 as cm
 from fastapi import FastAPI, UploadFile, HTTPException, File, Form, status
 import json
@@ -104,9 +106,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-#@app.get("/", response_class= HTTPException)
+@app.get("/", response_class= HTTPException)
+async def root():
+    """Servir interfaz principal"""
+    try:
+        with open("static/index.html", "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="Not found")
 
 
 @app.post("/metrics")
