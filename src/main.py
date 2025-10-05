@@ -4,11 +4,11 @@ from fastapi import FastAPI, UploadFile, HTTPException, File, Form, status
 import json
 import fitz
 import logging
-
+from fastapi.middleware.cors import CORSMiddleware
 from PyPDF2 import PdfReader, PdfWriter
 import magic
 from typing import Annotated
-
+from fastapi.staticfiles import StaticFiles
 #Configuración de logging
 logger=logging.getLogger("uvicorn.error")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -96,6 +96,17 @@ def extract_text_from_pdf(content: bytes) -> str:
             detail="El PDF no pudo ser procesado y no se pudo extraer el texto"
         )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+#app.mount("/static", StaticFiles(directory="static"), name="static")
+
+#@app.get("/", response_class= HTTPException)
 
 
 @app.post("/metrics")
@@ -116,6 +127,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data['metric'] = "Lexical_Density"
                     data['current_document'] = current_document
+               del text
                return data
           
           elif metric =="sophistication":
@@ -125,6 +137,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data['metric'] = "Sophistication"
                     data['current_document']= current_document 
+               del text
                return data
           
 
@@ -135,6 +148,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data['metric'] = "TTR"
                     data['current_document']= current_document 
+               del text
                return data
           
           elif metric == "root_ttr":
@@ -144,6 +158,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data['metric'] = "RootTTR"
                     data['current_document']= current_document
+               del text
                return data
 
           elif metric == "ttr_corrected":
@@ -153,6 +168,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data['metric'] = "CorrectedTTR"
                     data['current_document']= current_document
+               del text
                return data
           
           
@@ -163,15 +179,17 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data["metric"]="The Flesh Reading Ease Score"
                     data["current_document"] = current_document
+               del text
                return data
 
           elif metric == "kincaid":
 
                current_document = cm.TFREK(text)
-               with open("./JSON_Metrics/Kincaid.json","r") as file:
+               with open("./JSON_Metrics/Flesh_Kincaid.json","r") as file:
                     data = json.load(file)
                     data["metric"]="The Flesh-Kincaid Reading Ease Score"
                     data["current_document"] = current_document
+               del text
                return data
           
           elif metric == "fog":
@@ -181,6 +199,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data["metric"]="The Fog Index"
                     data["current_document"] = current_document
+               del text
                return data
           
           elif metric == "smog":
@@ -190,6 +209,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                     data = json.load(file)
                     data["metric"]="The SMOG Index"
                     data["current_document"] = current_document
+               del text
                return data
 
           else:
@@ -200,6 +220,22 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
      except Exception as e:
           logger.exception("Error processing the PDF file")
           raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+     
+     finally:
+          #Limpieza de memoria
+          # Liberar explícitamente variables grandes
+        if file_content is not None:
+            del file_content
+        if sanitize_content is not None:
+            del sanitize_content
+        if text is not None:
+            del text
+        
+        # Forzar recolección de basura
+        import gc
+        gc.collect()
+
+
 
 
     
