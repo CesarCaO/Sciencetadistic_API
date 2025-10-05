@@ -3,6 +3,7 @@ import io
 from fastapi.responses import HTMLResponse
 from scripts import MetricsV4 as cm
 from fastapi import FastAPI, UploadFile, HTTPException, File, Form, status
+from pathlib import Path
 import json
 import fitz
 import logging
@@ -105,14 +106,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.mount("/static", StaticFiles(directory="./static"), name="static")
+app.mount(
+    "/static", 
+    StaticFiles(directory=str(Path(__file__).resolve().parent.parent / "static")), 
+    name="static"
+)
 
 @app.get("/", response_class= HTMLResponse)
 async def root():
     """Servir interfaz principal"""
     try:
-        with open("static/index.html", "r", encoding="utf-8") as f:
+        with open(Path(__file__).resolve().parent.parent / "static" / "index.html", "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Not found")
