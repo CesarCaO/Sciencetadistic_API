@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>API de Riqueza Léxica</title>
+        <link rel="stylesheet" href="./cs/styles.css">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Sciencetadistic</h1>
+                
+                <p>API for lexical analysis and acceptance prediction of a scientific paper</p>
+            </div>
+
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-page="metrics">Lexical Richness</a>
+                <a href="#" class="nav-link" data-page="prediction">Acceptance Prediction</a>
+            </div>
+
+            <div class="content">
+                <!-- Página de Métricas -->
+                <div id="metrics-page" class="page active">
+                    <div class="description">
+                        <h2>Lexical Richness Analysis</h2>
+                        <p>Evalúa la calidad léxica de tu escrito comparándolo con un corpus de papers
+                            aceptados y rechazados.
+                            Selecciona una métrica y sube tu documento PDF para obtener un análisis detallado.</p>
+                    </div>
+
+                    <form id="metrics-form">
+                        <div class="upload-section">
+                            <div class="form-group">
+                                <label for="metric-select">Métrica de análisis</label>
+                                <select id="metric-select" required>
+                                    <option value="">Selecciona una métrica...</option>
+                                    <option value="lexical_density">Densidad Léxica</option>
+                                    <option value="sophistication">Sofisticación</option>
+                                    <option value="ttr">TTR (Type-Token Ratio)</option>
+                                    <option value="root_ttr">Root TTR</option>
+                                    <option value="ttr_corrected">TTR Corregido</option>
+                                    <option value="flesh">Flesch Reading Ease</option>
+                                    <option value="kincaid">Flesch-Kincaid Grade</option>
+                                    <option value="fog">Gunning Fog Index</option>
+                                    <option value="smog">SMOG Index</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Documento PDF</label>
+                                <div class="file-input-wrapper">
+                                    <input type="file" id="metrics-file" accept=".pdf" required>
+                                    <label for="metrics-file" class="file-label">
+                                         Seleccionar archivo PDF
+                                    </label>
+                                </div>
+                                <div class="file-name" id="metrics-filename"></div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn" id="analyze-btn">
+                            Analizar Documento
+                        </button>
+                    </form>
+
+                    <div class="loading" id="metrics-loading">
+                        <div class="spinner"></div>
+                        <p>Analizando documento...</p>
+                    </div>
+
+                    <div class="results" id="metrics-results">
+                        <div class="metric-result">
+                            <h3 id="metric-name">Métrica</h3>
+                            <div class="value" id="metric-value">0.00</div>
+                            <p>Resultado de tu documento</p>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Comparación con corpus de referencia</h3>
+                            <canvas id="boxplot"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Página de Predicción -->
+                <div id="prediction-page" class="page">
+                    <div class="description">
+                        <h2>Predicción de Aceptación</h2>
+                        <p>Utiliza nuestro modelo de machine learning para predecir si tu artículo científico será
+                            aceptado o rechazado
+                            en el proceso de evaluación. Sube tu documento PDF para obtener una predicción.</p>
+                    </div>
+
+                    <form id="prediction-form">
+                        <div class="form-group">
+                            <label>Documento PDF del artículo científico</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="prediction-file" accept=".pdf" required>
+                                <label for="prediction-file" class="file-label">
+                                     Seleccionar archivo PDF
+                                </label>
+                            </div>
+                            <div class="file-name" id="prediction-filename"></div>
+                        </div>
+
+                        <button type="submit" class="btn" id="predict-btn">
+                            Predecir Aceptación
+                        </button>
+                    </form>
+
+                    <div class="loading" id="prediction-loading">
+                        <div class="spinner"></div>
+                        <p>Analizando documento...</p>
+                    </div>
+
+                    <div class="results" id="prediction-results"></div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <script></script>
+    </body>
+</html>
