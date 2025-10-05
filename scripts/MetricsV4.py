@@ -130,8 +130,13 @@ def calculateSophistication(texto):
     return sophistication
 
 def calculateLexicalDensity(texto):
-    tokenized=tokenizeWords(texto)
+    
+    if not texto or not texto.strip():
+        return 0.0
+    
     tagged=wordsTagged(texto)
+    tokenized=tokenizeWords(texto)
+    
     #print("Palabras etiquetadas: ",len(tagged))
     #print("Palabras totales: ",len(tokenized))
     uniqueTagged=set(tagged)
