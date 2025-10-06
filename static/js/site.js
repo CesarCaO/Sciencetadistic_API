@@ -1,4 +1,4 @@
-// Change between pages
+ // Cambiar entre páginas
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -12,7 +12,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
- // Show selected file name
+// Mostrar nombre de archivo seleccionado
 document.getElementById('metrics-file').addEventListener('change', (e) => {
     const fileName = e.target.files[0]?.name || '';
     document.getElementById('metrics-filename').textContent = fileName ? `✓ ${fileName}` : '';
@@ -23,8 +23,7 @@ document.getElementById('prediction-file').addEventListener('change', (e) => {
     document.getElementById('prediction-filename').textContent = fileName ? `✓ ${fileName}` : '';
 });
 
-
-// Metrics form
+// Formulario de métricas
 document.getElementById('metrics-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -42,11 +41,16 @@ document.getElementById('metrics-form').addEventListener('submit', async (e) => 
             body: formData
         });
 
-        if (!response.ok) throw new Error('Error en la solicitud');
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Error ${response.status}`);
+        }
 
         const data = await response.json();
+        console.log('Datos recibidos:', data); // Para debugging
         displayMetricResults(data);
     } catch (error) {
+        console.error('Error completo:', error);
         alert('Error al analizar el documento: ' + error.message);
     } finally {
         document.getElementById('metrics-loading').classList.remove('active');
@@ -54,9 +58,18 @@ document.getElementById('metrics-form').addEventListener('submit', async (e) => 
     }
 });
 
-//Function for display the analysis file result
 function displayMetricResults(data) {
-    document.getElementById('metric-name').textContent = data.metric;
+    // Validar que los datos existan (adaptado a tu formato)
+    console.log('Estructura completa de datos:', data);
+    console.log('Claves disponibles:', Object.keys(data));
+    
+    if (!data || data.current_document === undefined) {
+        alert('Error: La respuesta del servidor no contiene los datos esperados\nClaves recibidas: ' + Object.keys(data).join(', '));
+        console.error('Datos recibidos:', data);
+        return;
+    }
+    
+    document.getElementById('metric-name').textContent = data.metric || 'Métrica';
     document.getElementById('metric-value').textContent = parseFloat(data.current_document).toFixed(3);
     
     createBoxplot(data);
@@ -64,41 +77,51 @@ function displayMetricResults(data) {
     document.getElementById('metrics-results').classList.add('active');
 }
 
-//Create boxplot
 function createBoxplot(data) {
+    console.log('Creando gráfico con datos:', data);
+    console.log('Accepted:', data.Accepted);
+    console.log('Rejected:', data.Rejected);
+    
+    // Intentar con diferentes variaciones de nombres
+    const acceptedData = data.Accepted || data.accepted || data.Aceptados || [];
+    const rejectedData = data.Rejected || data.rejected || data.Rechazados || [];
+    
+    // Validar que los datos de los arrays existan
+    if (!acceptedData || !rejectedData || acceptedData.length === 0 || rejectedData.length === 0) {
+        console.error('Faltan datos de papers aceptados o rechazados');
+        console.error('Accepted:', acceptedData);
+        console.error('Rejected:', rejectedData);
+        alert('Error: No se encontraron datos de papers aceptados o rechazados en la respuesta');
+        return;
+    }
+    
     const ctx = document.getElementById('boxplot');
     
     if (window.myChart) {
         window.myChart.destroy();
     }
 
-    const allData = [
-        ...data.accepted_papers.map(v => ({x: 'Accepted', y: v})),
-        ...data.rejected_papers.map(v => ({x: 'Rejected', y: v})),
-        {x: 'Your document', y: data.current_document}
-    ];
-
     window.myChart = new Chart(ctx, {
         type: 'scatter',
         data: {
             datasets: [
                 {
-                    label: 'Accepted papers',
-                    data: data.accepted.map(v => ({x: 0, y: v})),
+                    label: 'Papers Aceptados',
+                    data: acceptedData.map(v => ({x: 0, y: v})),
                     backgroundColor: 'rgba(17, 153, 142, 0.5)',
                     borderColor: 'rgba(17, 153, 142, 1)',
                     pointRadius: 6
                 },
                 {
-                    label: 'Rejected papers',
-                    data: data.rejected.map(v => ({x: 1, y: v})),
+                    label: 'Papers Rechazados',
+                    data: rejectedData.map(v => ({x: 1, y: v})),
                     backgroundColor: 'rgba(235, 51, 73, 0.5)',
                     borderColor: 'rgba(235, 51, 73, 1)',
                     pointRadius: 6
                 },
                 {
-                    label: 'Your document',
-                    data: [{x: 0.5, y: data.user_result}],
+                    label: 'Tu Documento',
+                    data: [{x: 0.5, y: data.current_document}],
                     backgroundColor: '#0077b6',
                     borderColor: '#0077b6',
                     pointRadius: 12,
@@ -116,9 +139,9 @@ function createBoxplot(data) {
                     max: 1.5,
                     ticks: {
                         callback: function(value) {
-                            if (value === 0) return 'Accepted';
-                            if (value === 1) return 'Rejected';
-                            if (value === 0.5) return 'Your doc';
+                            if (value === 0) return 'Aceptados';
+                            if (value === 1) return 'Rechazados';
+                            if (value === 0.5) return 'Tu Doc';
                             return '';
                         }
                     }
@@ -127,7 +150,7 @@ function createBoxplot(data) {
                     beginAtZero: false,
                     title: {
                         display: true,
-                        text: 'Metric Value'
+                        text: 'Valor de la métrica'
                     }
                 }
             },
@@ -139,11 +162,59 @@ function createBoxplot(data) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `Value: ${context.parsed.y.toFixed(3)}`;
+                            return `Valor: ${context.parsed.y.toFixed(3)}`;
                         }
                     }
                 }
             }
         }
     });
+}
+
+// Formulario de predicción
+document.getElementById('prediction-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('file', document.getElementById('prediction-file').files[0]);
+
+    document.getElementById('prediction-loading').classList.add('active');
+    document.getElementById('prediction-results').innerHTML = '';
+    document.getElementById('predict-btn').disabled = true;
+
+    try {
+        const response = await fetch('/model/', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) throw new Error('Error en la solicitud');
+
+        const data = await response.json();
+        displayPredictionResult(data);
+    } catch (error) {
+        alert('Error al analizar el documento: ' + error.message);
+    } finally {
+        document.getElementById('prediction-loading').classList.remove('active');
+        document.getElementById('predict-btn').disabled = false;
+    }
+});
+
+function displayPredictionResult(data) {
+    const isAccepted = data.prediction === 1;
+    const resultClass = isAccepted ? 'accepted' : 'rejected';
+    const resultText = isAccepted ? 'ACEPTADO' : 'RECHAZADO';
+    const resultEmoji = isAccepted ? '✅' : '❌';
+    const resultMessage = isAccepted 
+        ? 'Tu artículo tiene alta probabilidad de ser aceptado'
+        : 'Tu artículo necesita mejoras antes de ser sometido';
+
+    document.getElementById('prediction-results').innerHTML = `
+        <div class="prediction-result ${resultClass}">
+            <h2>${resultEmoji} ${resultText}</h2>
+            <p>${resultMessage}</p>
+        </div>
+    `;
+    
+    document.getElementById('prediction-results').classList.add('active');
 }
