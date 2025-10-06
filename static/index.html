@@ -26,22 +26,21 @@
                 <div id="metrics-page" class="page active">
                     <div class="description">
                         <h2>Lexical Richness Analysis</h2>
-                        <p>Evalúa la calidad léxica de tu escrito comparándolo con un corpus de papers
-                            aceptados y rechazados.
-                            Selecciona una métrica y sube tu documento PDF para obtener un análisis detallado.</p>
+                        <p>Evaluate the lexical quality of your text and compare it with accepted and rejected scientific papaers to know your writting level. 
+                            Upload your PDF document</p>
                     </div>
 
                     <form id="metrics-form">
                         <div class="upload-section">
                             <div class="form-group">
-                                <label for="metric-select">Métrica de análisis</label>
+                                <label for="metric-select">Metric</label>
                                 <select id="metric-select" required>
-                                    <option value="">Selecciona una métrica...</option>
-                                    <option value="lexical_density">Densidad Léxica</option>
-                                    <option value="sophistication">Sofisticación</option>
+                                    <option value="">Select a métric...</option>
+                                    <option value="lexical_density">Lexical Density</option>
+                                    <option value="sophistication">Lexic Sofistication</option>
                                     <option value="ttr">TTR (Type-Token Ratio)</option>
                                     <option value="root_ttr">Root TTR</option>
-                                    <option value="ttr_corrected">TTR Corregido</option>
+                                    <option value="ttr_corrected">Corrected TTR</option>
                                     <option value="flesh">Flesch Reading Ease</option>
                                     <option value="kincaid">Flesch-Kincaid Grade</option>
                                     <option value="fog">Gunning Fog Index</option>
@@ -50,11 +49,11 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Documento PDF</label>
+                                <label>PDF Document</label>
                                 <div class="file-input-wrapper">
                                     <input type="file" id="metrics-file" accept=".pdf" required>
                                     <label for="metrics-file" class="file-label">
-                                         Seleccionar archivo PDF
+                                         Select PDF File
                                     </label>
                                 </div>
                                 <div class="file-name" id="metrics-filename"></div>
@@ -62,24 +61,24 @@
                         </div>
 
                         <button type="submit" class="btn" id="analyze-btn">
-                            Analizar Documento
+                            Start Analysis
                         </button>
                     </form>
 
                     <div class="loading" id="metrics-loading">
                         <div class="spinner"></div>
-                        <p>Analizando documento...</p>
+                        <p>Analysing...</p>
                     </div>
 
                     <div class="results" id="metrics-results">
                         <div class="metric-result">
-                            <h3 id="metric-name">Métrica</h3>
+                            <h3 id="metric-name">Metric/h3>
                             <div class="value" id="metric-value">0.00</div>
-                            <p>Resultado de tu documento</p>
+                            <p>Results</p>
                         </div>
 
                         <div class="chart-container">
-                            <h3>Comparación con corpus de referencia</h3>
+                            <h3>Comparison with accepted and rejected papers</h3>
                             <canvas id="boxplot"></canvas>
                         </div>
                     </div>
