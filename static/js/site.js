@@ -56,8 +56,8 @@ document.getElementById('metrics-form').addEventListener('submit', async (e) => 
 
 //Function for display the analysis file result
 function displayMetricResults(data) {
-    document.getElementById('metric-name').textContent = data.metric_name;
-    document.getElementById('metric-value').textContent = data.user_result.toFixed(3);
+    document.getElementById('metric-name').textContent = data.metric;
+    document.getElementById('metric-value').textContent = parseFloat(data.current_document).toFixed(3);
     
     createBoxplot(data);
     
@@ -75,7 +75,7 @@ function createBoxplot(data) {
     const allData = [
         ...data.accepted_papers.map(v => ({x: 'Accepted', y: v})),
         ...data.rejected_papers.map(v => ({x: 'Rejected', y: v})),
-        {x: 'Tu documento', y: data.user_result}
+        {x: 'Your document', y: data.current_document}
     ];
 
     window.myChart = new Chart(ctx, {
