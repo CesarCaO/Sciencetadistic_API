@@ -59,17 +59,17 @@ document.getElementById('metrics-form').addEventListener('submit', async (e) => 
 });
 
 function displayMetricResults(data) {
-    // Validar que los datos existan (adaptado a tu formato)
-    console.log('Estructura completa de datos:', data);
-    console.log('Claves disponibles:', Object.keys(data));
+    
+    //console.log('Estructura completa de datos:', data);
+    //console.log('Claves disponibles:', Object.keys(data));
     
     if (!data || data.current_document === undefined) {
-        alert('Error: La respuesta del servidor no contiene los datos esperados\nClaves recibidas: ' + Object.keys(data).join(', '));
-        console.error('Datos recibidos:', data);
+        alert('Error: The server response does not contain de expected data\nKeys received: ' + Object.keys(data).join(', '));
+        console.error('Data received:', data);
         return;
     }
     
-    document.getElementById('metric-name').textContent = data.metric || 'Métrica';
+    document.getElementById('metric-name').textContent = data.metric;
     document.getElementById('metric-value').textContent = parseFloat(data.current_document).toFixed(3);
     
     createBoxplot(data);
@@ -78,20 +78,20 @@ function displayMetricResults(data) {
 }
 
 function createBoxplot(data) {
-    console.log('Creando gráfico con datos:', data);
-    console.log('Accepted:', data.Accepted);
-    console.log('Rejected:', data.Rejected);
+    //console.log('Creando gráfico con datos:', data);
+    //console.log('Accepted:', data.Accepted);
+    //console.log('Rejected:', data.Rejected);
     
-    // Intentar con diferentes variaciones de nombres
+    // API could sent the response on diferent formats
     const acceptedData = data.Accepted || data.accepted || data.Aceptados || [];
     const rejectedData = data.Rejected || data.rejected || data.Rechazados || [];
     
-    // Validar que los datos de los arrays existan
+    
     if (!acceptedData || !rejectedData || acceptedData.length === 0 || rejectedData.length === 0) {
-        console.error('Faltan datos de papers aceptados o rechazados');
+        console.error('Data of accepted and rejected papers is missing');
         console.error('Accepted:', acceptedData);
         console.error('Rejected:', rejectedData);
-        alert('Error: No se encontraron datos de papers aceptados o rechazados en la respuesta');
+        alert('Error: Data of accepted and rejected papers was not found');
         return;
     }
     
@@ -106,25 +106,28 @@ function createBoxplot(data) {
         data: {
             datasets: [
                 {
-                    label: 'Papers Aceptados',
+                    label: 'Accepted papers',
                     data: acceptedData.map(v => ({x: 0, y: v})),
                     backgroundColor: 'rgba(17, 153, 142, 0.5)',
                     borderColor: 'rgba(17, 153, 142, 1)',
-                    pointRadius: 6
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 },
                 {
-                    label: 'Papers Rechazados',
+                    label: 'Rejected papers',
                     data: rejectedData.map(v => ({x: 1, y: v})),
                     backgroundColor: 'rgba(235, 51, 73, 0.5)',
                     borderColor: 'rgba(235, 51, 73, 1)',
-                    pointRadius: 6
+                    pointRadius: 6,
+                    pointHoverRadius: 8
                 },
                 {
-                    label: 'Tu Documento',
+                    label: 'Your document',
                     data: [{x: 0.5, y: data.current_document}],
                     backgroundColor: '#0077b6',
                     borderColor: '#0077b6',
                     pointRadius: 12,
+                    pointHoverRadius: 14,
                     pointStyle: 'star'
                 }
             ]
@@ -132,6 +135,13 @@ function createBoxplot(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 0
+            },
+            hover: {
+                animationDuration: 0
+            },
+            responsiveAnimationDuration: 0,
             scales: {
                 x: {
                     type: 'linear',
@@ -139,9 +149,9 @@ function createBoxplot(data) {
                     max: 1.5,
                     ticks: {
                         callback: function(value) {
-                            if (value === 0) return 'Aceptados';
-                            if (value === 1) return 'Rechazados';
-                            if (value === 0.5) return 'Tu Doc';
+                            if (value === 0) return 'Accepted';
+                            if (value === 1) return 'Rejected';
+                            if (value === 0.5) return 'Your doc';
                             return '';
                         }
                     }
@@ -150,7 +160,7 @@ function createBoxplot(data) {
                     beginAtZero: false,
                     title: {
                         display: true,
-                        text: 'Valor de la métrica'
+                        text: 'Metric value'
                     }
                 }
             },
@@ -160,9 +170,12 @@ function createBoxplot(data) {
                     position: 'top'
                 },
                 tooltip: {
+                    enabled: true,
+                    mode: 'nearest',
+                    intersect: true,
                     callbacks: {
                         label: function(context) {
-                            return `Valor: ${context.parsed.y.toFixed(3)}`;
+                            return `Value: ${context.parsed.y.toFixed(3)}`;
                         }
                     }
                 }
@@ -170,7 +183,6 @@ function createBoxplot(data) {
         }
     });
 }
-
 // Formulario de predicción
 document.getElementById('prediction-form').addEventListener('submit', async (e) => {
     e.preventDefault();
