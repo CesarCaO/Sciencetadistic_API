@@ -84,14 +84,14 @@ function createBoxplot(data) {
             datasets: [
                 {
                     label: 'Accepted papers',
-                    data: data.Accepted.map(v => ({x: 0, y: v})),
+                    data: data.accepted.map(v => ({x: 0, y: v})),
                     backgroundColor: 'rgba(17, 153, 142, 0.5)',
                     borderColor: 'rgba(17, 153, 142, 1)',
                     pointRadius: 6
                 },
                 {
                     label: 'Rejected papers',
-                    data: data.Rejected.map(v => ({x: 1, y: v})),
+                    data: data.rejected.map(v => ({x: 1, y: v})),
                     backgroundColor: 'rgba(235, 51, 73, 0.5)',
                     borderColor: 'rgba(235, 51, 73, 1)',
                     pointRadius: 6
