@@ -9,116 +9,114 @@
     </head>
 
     <body>
-        <div class="container">
-            <div class="header">
-                <h1>Sciencetadistic</h1>
-                
-                <p>API for lexical analysis and acceptance prediction of a scientific paper</p>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>Sciencetadistic API</h1>
+             <p>API for lexical analysis and acceptance prediction of a scientific paper</p>
+        </div>
 
-            <div class="nav-links">
-                <a href="#" class="nav-link active" data-page="metrics">Lexical Richness</a>
-                <a href="#" class="nav-link" data-page="prediction">Acceptance Prediction</a>
-            </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-page="metrics">Lexical Metrics</a>
+            <a href="#" class="nav-link" data-page="prediction">Acceptance Prediction</a>
+        </div>
 
-            <div class="content">
-                <!-- Página de Métricas -->
-                <div id="metrics-page" class="page active">
-                    <div class="description">
-                        <h2>Lexical Richness Analysis</h2>
+        <div class="content">
+            <!-- Metrics Page -->
+            <div id="metrics-page" class="page active">
+                <div class="description">
+                     <h2>Lexical Richness Analysis</h2>
                         <p>Evaluate the lexical quality of your text and compare it with accepted and rejected scientific papaers to know your writting level. 
                             Upload your PDF document</p>
-                    </div>
-
-                    <form id="metrics-form">
-                        <div class="upload-section">
-                            <div class="form-group">
-                                <label for="metric-select">Metric</label>
-                                <select id="metric-select" required>
-                                    <option value="">Select a métric...</option>
-                                    <option value="lexical_density">Lexical Density</option>
-                                    <option value="sophistication">Lexic Sofistication</option>
-                                    <option value="ttr">TTR (Type-Token Ratio)</option>
-                                    <option value="root_ttr">Root TTR</option>
-                                    <option value="ttr_corrected">Corrected TTR</option>
-                                    <option value="flesh">Flesch Reading Ease</option>
-                                    <option value="kincaid">Flesch-Kincaid Grade</option>
-                                    <option value="fog">Gunning Fog Index</option>
-                                    <option value="smog">SMOG Index</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label>PDF Document</label>
-                                <div class="file-input-wrapper">
-                                    <input type="file" id="metrics-file" accept=".pdf" required>
-                                    <label for="metrics-file" class="file-label">
-                                         Select PDF File
-                                    </label>
-                                </div>
-                                <div class="file-name" id="metrics-filename"></div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn" id="analyze-btn">
-                            Start Analysis
-                        </button>
-                    </form>
-
-                    <div class="loading" id="metrics-loading">
-                        <div class="spinner"></div>
-                        <p>Analysing...</p>
-                    </div>
-
-                    <div class="results" id="metrics-results">
-                        <div class="metric-result">
-                            <h3 id="metric-name">Metric/h3>
-                            <div class="value" id="metric-value">0.00</div>
-                            <p>Results</p>
-                        </div>
-
-                        <div class="chart-container">
-                            <h3>Comparison with accepted and rejected papers</h3>
-                            <canvas id="boxplot"></canvas>
-                        </div>
-                    </div>
                 </div>
 
-                <!-- Página de Predicción -->
-                <div id="prediction-page" class="page">
-                    <div class="description">
-                        <h2>Predicción de Aceptación</h2>
-                        <p>Utiliza nuestro modelo de machine learning para predecir si tu artículo científico será
-                            aceptado o rechazado
-                            en el proceso de evaluación. Sube tu documento PDF para obtener una predicción.</p>
-                    </div>
-
-                    <form id="prediction-form">
+                <form id="metrics-form">
+                    <div class="upload-section">
                         <div class="form-group">
-                            <label>Documento PDF del artículo científico</label>
+                            <label for="metric-select">Analysis metric</label>
+                            <select id="metric-select" required>
+                                <option value="">Select a metric...</option>
+                                <option value="lexical_density">Lexical Density</option>
+                                <option value="sophistication">Sophistication</option>
+                                <option value="ttr">TTR (Type-Token Ratio)</option>
+                                <option value="root_ttr">Root TTR</option>
+                                <option value="ttr_corrected">Corrected TTR</option>
+                                <option value="flesh">Flesch Reading Ease</option>
+                                <option value="kincaid">Flesch-Kincaid Grade</option>
+                                <option value="fog">Gunning Fog Index</option>
+                                <option value="smog">SMOG Index</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>PDF Document</label>
                             <div class="file-input-wrapper">
-                                <input type="file" id="prediction-file" accept=".pdf" required>
-                                <label for="prediction-file" class="file-label">
-                                     Seleccionar archivo PDF
+                                <input type="file" id="metrics-file" accept=".pdf" required>
+                                <label for="metrics-file" class="file-label">
+                                    Select PDF file
                                 </label>
                             </div>
-                            <div class="file-name" id="prediction-filename"></div>
+                            <div class="file-name" id="metrics-filename"></div>
                         </div>
-
-                        <button type="submit" class="btn" id="predict-btn">
-                            Predecir Aceptación
-                        </button>
-                    </form>
-
-                    <div class="loading" id="prediction-loading">
-                        <div class="spinner"></div>
-                        <p>Analizando documento...</p>
                     </div>
 
-                    <div class="results" id="prediction-results"></div>
+                    <button type="submit" class="btn" id="analyze-btn">
+                        Analyze Document
+                    </button>
+                </form>
+
+                <div class="loading" id="metrics-loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing document...</p>
+                </div>
+
+                <div class="results" id="metrics-results">
+                    <div class="metric-result">
+                        <h3 id="metric-name">Metric</h3>
+                        <div class="value" id="metric-value">0.00</div>
+                        <p>Result for your document</p>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>Comparison with reference corpus</h3>
+                        <canvas id="boxplot"></canvas>
+                    </div>
                 </div>
             </div>
+
+            <!-- Prediction Page -->
+            <div id="prediction-page" class="page">
+                <div class="description">
+                    <h2>Acceptance Prediction</h2>
+                    <p>Use our machine learning model to predict whether your scientific article will be accepted or rejected 
+                    in the evaluation process. Upload your PDF document to get a prediction.</p>
+                </div>
+
+                <form id="prediction-form">
+                    <div class="form-group">
+                        <label>PDF document of the scientific article</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="prediction-file" accept=".pdf" required>
+                            <label for="prediction-file" class="file-label">
+                                 Select PDF file
+                            </label>
+                        </div>
+                        <div class="file-name" id="prediction-filename"></div>
+                    </div>
+
+                    <button type="submit" class="btn" id="predict-btn">
+                        Predict Acceptance
+                    </button>
+                </form>
+
+                <div class="loading" id="prediction-loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing document...</p>
+                </div>
+
+                <div class="results" id="prediction-results"></div>
+            </div>
         </div>
+    </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
         <script src="/static/js/site.js"></script>
     </body>
