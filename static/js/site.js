@@ -98,6 +98,24 @@ function createBoxplot(data) {
         return;
     }
     
+    // Calculate statistics instead of plotting all points
+    function calculateStats(arr) {
+        const sorted = arr.slice().sort((a, b) => a - b);
+        const min = sorted[0];
+        const max = sorted[sorted.length - 1];
+        const q1 = sorted[Math.floor(sorted.length * 0.25)];
+        const median = sorted[Math.floor(sorted.length * 0.5)];
+        const q3 = sorted[Math.floor(sorted.length * 0.75)];
+        const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+        return { min, q1, median, q3, max, mean };
+    }
+    
+    const acceptedStats = calculateStats(acceptedData);
+    const rejectedStats = calculateStats(rejectedData);
+    
+    console.log('Accepted stats:', acceptedStats);
+    console.log('Rejected stats:', rejectedStats);
+    
     const ctx = document.getElementById('boxplot');
     
     // Destroy previous chart if exists
@@ -106,37 +124,62 @@ function createBoxplot(data) {
         myChart = null;
     }
 
+    // Create box plot visualization
     myChart = new Chart(ctx, {
-        type: 'scatter',
+        type: 'bar',
         data: {
+            labels: ['Accepted Papers', 'Your Document', 'Rejected Papers'],
             datasets: [
                 {
-                    label: 'Accepted Papers',
-                    data: acceptedData.map(v => ({x: 0, y: v})),
-                    backgroundColor: 'rgba(17, 153, 142, 0.6)',
-                    borderColor: 'rgba(17, 153, 142, 1)',
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
-                    pointStyle: 'circle'
+                    label: 'Min',
+                    data: [acceptedStats.min, null, rejectedStats.min],
+                    backgroundColor: 'transparent',
+                    borderColor: 'transparent',
+                    borderWidth: 0
                 },
                 {
-                    label: 'Rejected Papers',
-                    data: rejectedData.map(v => ({x: 1, y: v})),
-                    backgroundColor: 'rgba(235, 51, 73, 0.6)',
-                    borderColor: 'rgba(235, 51, 73, 1)',
-                    pointRadius: 6,
-                    pointHoverRadius: 8,
-                    pointStyle: 'circle'
+                    label: 'Q1-Min',
+                    data: [
+                        acceptedStats.q1 - acceptedStats.min,
+                        null,
+                        rejectedStats.q1 - rejectedStats.min
+                    ],
+                    backgroundColor: 'rgba(17, 153, 142, 0.3)',
+                    borderColor: 'rgba(17, 153, 142, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Q3-Q1 (IQR)',
+                    data: [
+                        acceptedStats.q3 - acceptedStats.q1,
+                        null,
+                        rejectedStats.q3 - rejectedStats.q1
+                    ],
+                    backgroundColor: 'rgba(17, 153, 142, 0.6)',
+                    borderColor: 'rgba(17, 153, 142, 1)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Max-Q3',
+                    data: [
+                        acceptedStats.max - acceptedStats.q3,
+                        null,
+                        rejectedStats.max - rejectedStats.q3
+                    ],
+                    backgroundColor: 'rgba(17, 153, 142, 0.3)',
+                    borderColor: 'rgba(17, 153, 142, 1)',
+                    borderWidth: 2
                 },
                 {
                     label: 'Your Document',
-                    data: [{x: 0.5, y: data.current_document}],
+                    data: [null, data.current_document, null],
                     backgroundColor: '#0077b6',
                     borderColor: '#023e8a',
-                    borderWidth: 2,
-                    pointRadius: 10,
-                    pointHoverRadius: 12,
-                    pointStyle: 'star'
+                    borderWidth: 3,
+                    type: 'scatter',
+                    pointStyle: 'star',
+                    pointRadius: 15,
+                    pointHoverRadius: 17
                 }
             ]
         },
@@ -144,30 +187,20 @@ function createBoxplot(data) {
             responsive: true,
             maintainAspectRatio: false,
             animation: false,
-            hover: {
+            interaction: {
                 mode: 'nearest',
-                intersect: true
+                axis: 'x',
+                intersect: false
             },
             scales: {
                 x: {
-                    type: 'linear',
-                    min: -0.5,
-                    max: 1.5,
-                    ticks: {
-                        stepSize: 0.5,
-                        callback: function(value) {
-                            if (value === 0) return 'Accepted';
-                            if (value === 0.5) return 'Your Doc';
-                            if (value === 1) return 'Rejected';
-                            return '';
-                        }
-                    },
+                    stacked: true,
                     grid: {
-                        display: true,
-                        color: 'rgba(0, 0, 0, 0.1)'
+                        display: false
                     }
                 },
                 y: {
+                    stacked: true,
                     beginAtZero: false,
                     title: {
                         display: true,
@@ -178,29 +211,34 @@ function createBoxplot(data) {
                         }
                     },
                     grid: {
-                        display: true,
                         color: 'rgba(0, 0, 0, 0.1)'
                     }
                 }
             },
             plugins: {
                 legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 15
-                    }
+                    display: false
                 },
                 tooltip: {
                     enabled: true,
-                    mode: 'nearest',
-                    intersect: true,
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 10,
+                    padding: 12,
                     callbacks: {
-                        label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y.toFixed(3);
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        afterTitle: function(context) {
+                            const label = context[0].label;
+                            if (label === 'Accepted Papers') {
+                                return `\nStatistics (n=${acceptedData.length}):\nMin: ${acceptedStats.min.toFixed(3)}\nQ1: ${acceptedStats.q1.toFixed(3)}\nMedian: ${acceptedStats.median.toFixed(3)}\nMean: ${acceptedStats.mean.toFixed(3)}\nQ3: ${acceptedStats.q3.toFixed(3)}\nMax: ${acceptedStats.max.toFixed(3)}`;
+                            } else if (label === 'Rejected Papers') {
+                                return `\nStatistics (n=${rejectedData.length}):\nMin: ${rejectedStats.min.toFixed(3)}\nQ1: ${rejectedStats.q1.toFixed(3)}\nMedian: ${rejectedStats.median.toFixed(3)}\nMean: ${rejectedStats.mean.toFixed(3)}\nQ3: ${rejectedStats.q3.toFixed(3)}\nMax: ${rejectedStats.max.toFixed(3)}`;
+                            } else if (label === 'Your Document') {
+                                return `\nValue: ${data.current_document.toFixed(3)}`;
+                            }
+                        },
+                        label: function() {
+                            return null; // Hide individual dataset labels
                         }
                     }
                 }
