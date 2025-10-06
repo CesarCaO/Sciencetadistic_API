@@ -80,9 +80,7 @@ function displayMetricResults(data) {
     
     metricNameEl.textContent = data.metric || 'Metric';
     metricValueEl.textContent = parseFloat(data.current_document).toFixed(3);
-    
-    createBoxplot(data);
-    
+
     document.getElementById('metrics-results').classList.add('active');
 }
 
