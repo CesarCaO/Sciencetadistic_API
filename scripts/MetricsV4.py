@@ -62,7 +62,7 @@ def tokenizeWords(texto):#Separador de palabras
 
 def removeReferences(texto):
     #multilanguage regex to remove references
-    textoLower=texto.lower()
+    #textoLower=texto.lower()
     headers={
         r'references',
         r'referencias',
@@ -75,11 +75,11 @@ def removeReferences(texto):
 
     header_patern=r'(?mi)^[ \t]*(?:' + '|'.join(headers) + r')[ \t]*$'
 
-    match=re.search(header_patern,textoLower)
+    match=re.search(header_patern,texto)
     if match:
-        return textoLower[:match.start()]
+        return texto[:match.start()]
     else:
-        return textoLower
+        return texto
 
 #def getEasyWords():#Función para obtener las 3000 palabras más faciles del idioma inglés
     #path = os.path.join(os.path.dirname(__file__),"txts", "3000easyWords.txt")
