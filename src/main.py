@@ -1,10 +1,12 @@
 import io
-
 from fastapi.responses import HTMLResponse
 from scripts import MetricsV4 as cm
 from fastapi import FastAPI, UploadFile, HTTPException, File, Form, status
 from pathlib import Path
 import json
+from pathlib import Path
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
+from fastapi.responses import HTMLResponse
 import fitz
 import logging
 from fastapi.middleware.cors import CORSMiddleware
@@ -252,21 +254,19 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
 
     
 
-@app.post("/model/")
-def predicitve_model(file: UploadFile):
+@app.post("/prediction")
+async def predicitve_model(file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
+     await validate_file_size(file)
+     file_content = await validate_pdf_file(file)
+     sanitize_content = sanitize_pdf(file_content)
+     text = extract_text_from_pdf(sanitize_content)
 
-     try:
-          file.file.seek(0)  # Reset the file pointer to the beginning
-          doc = fitz.open(stream=file.file.read(), filetype="pdf")
-          text = ""
-          for page in doc:
-               text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
-          
-          text = cm.removeReferences(text)
-          text = cm.cleanText(text)
+     text= cm.removeReferences(text)
+     text= cm.cleanText(text)
 
-          x_test=[text.lower()]
-     
-     except Exception as e:
-          logger.exception("Error processing the PDF file")
-          raise HTTPException(status_code=500, detail=str(e))
+
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
