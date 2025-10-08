@@ -36,6 +36,7 @@ with open(save_path+'/Lexical_Density.json', "w", encoding="utf-8") as file:
     file.close()
 """
 """
+#Sophistication
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
 sf_accepted = df_aceptados['Texto Completo'].progress_apply(m.calculateSophistication).tolist()
 tqdm.pandas(desc="Progreso de procesamiento de Rechazados")
@@ -83,7 +84,7 @@ with open(save_path+'Root_TTR.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
 """
-
+""""""
 #TTR corrected
 
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
