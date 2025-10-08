@@ -90,25 +90,7 @@ def removeReferences(texto):
         #return easyWords
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////
-"""
-def calculateLexicalDensity(texto):
 
-    list_Tokenized=tokenizeWords(texto)
-    functionWords=getFunctionWords(texto)
-
-    #print("Funcion words: ",functionWords)
-
-    listWords=[w.lower() for w in list_Tokenized if(w.lower() not in functionWords) and w.isalpha()==True]#Identificando unidades lexicas
-    #print("Unidades léxicas: ",listWords)	
-    #print("Palabras totales: ",len(list_Tokenized))
-
-    uniqueWords=set(listWords)
-    #print("Palabras léxicas únicas: ",uniqueWords)
-
-
-    DL=len(uniqueWords)/(float(len(list_Tokenized)))# Es necesario float para evitar una division entera
-    return DL
-"""
 
 def calculateSophistication(texto):
     tokens=tokenizeWords(texto)
@@ -126,7 +108,7 @@ def calculateSophistication(texto):
         1 for w in lex_Words 
         if w not in EASY_WORDS and len(w) > 3
     )
-    sophistication = (hard_words_count / len(lex_Words)) * 100
+    sophistication = hard_words_count / len(lex_Words)
     return sophistication
 
 def calculateLexicalDensity(texto):
@@ -141,14 +123,14 @@ def calculateLexicalDensity(texto):
     #print("Palabras totales: ",len(tokenized))
     uniqueTagged=set(tagged)
     #print("Palabras etiquetadas únicas: ",uniqueTagged)
-    DL_tagged=(len(uniqueTagged)/float(len(tokenized)))*100
+    DL_tagged=len(uniqueTagged)/float(len(tokenized))
     return DL_tagged
 
 
 def calculateTTR(texto):
    
     lex=LexicalRichness(texto)
-    return (lex.ttr)*100
+    return (lex.ttr)
 
 
 def calculateTTRRoot(texto):

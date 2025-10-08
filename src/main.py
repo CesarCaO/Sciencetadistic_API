@@ -22,7 +22,7 @@ app = FastAPI() #objeto que instancia Fast API
 #SEGURIDAD PERIMETRAL
 
 #Configuración del tamaño de PDF
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB límite de tamaño
+MAX_FILE_SIZE = 4 * 1024 * 1024  # 10MB límite de tamaño
 ALLOWED_MIME_TYPES = {"application/pdf"}
 
 #Configuración para la optimización
