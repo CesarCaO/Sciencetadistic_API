@@ -266,10 +266,10 @@ async def predicitve_model(file:Annotated[UploadFile, File(description="Archivo 
           text= cm.removeReferences(text)
           text= cm.cleanText(text)
 
+          prediction_result = cm.prediction(text)[0]
           prediction = {
-               "prediction": cm.prediction(text)[0]
+               "prediction": int(prediction_result)  # Conversión explícita
           }
-
           return prediction
      
      except HTTPException as he:
