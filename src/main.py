@@ -277,11 +277,20 @@ async def predicitve_model(file:Annotated[UploadFile, File(description="Archivo 
      except Exception as e:
           logger.exception("Error processing the PDF file")
           raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+     
+     finally:
+          #Limpieza de memoria
+          # Liberar explícitamente variables grandes
+        if file_content is not None:
+            del file_content
+        if sanitize_content is not None:
+            del sanitize_content
+
+        
+        # Forzar recolección de basura
+        import gc
+        gc.collect()
           
-
-
-
-
 
 
 if __name__ == "__main__":
