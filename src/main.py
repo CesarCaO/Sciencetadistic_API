@@ -126,6 +126,10 @@ async def root():
 
 @app.post("/metrics")
 async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular: lexical_density, sophistication, ttr, root_ttr, ttr_corrected, flesh, kincaid, fog, smog")], file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
+      # Inicializar variables al inicio
+     file_content = None
+     sanitize_content = None
+     
      try:
           
           await validate_file_size(file)
