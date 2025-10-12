@@ -129,7 +129,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
       # Inicializar variables al inicio
      file_content = None
      sanitize_content = None
-     
+
      try:
           
           await validate_file_size(file)
@@ -296,7 +296,8 @@ async def predicitve_model(file:Annotated[UploadFile, File(description="Archivo 
         gc.collect()
           
 
-
+"""
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
+"""
