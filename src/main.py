@@ -256,13 +256,30 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
 
 @app.post("/prediction")
 async def predicitve_model(file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
-     await validate_file_size(file)
-     file_content = await validate_pdf_file(file)
-     sanitize_content = sanitize_pdf(file_content)
-     text = extract_text_from_pdf(sanitize_content)
+     
+     try:
+          await validate_file_size(file)
+          file_content = await validate_pdf_file(file)
+          sanitize_content = sanitize_pdf(file_content)
+          text = extract_text_from_pdf(sanitize_content)
 
-     text= cm.removeReferences(text)
-     text= cm.cleanText(text)
+          text= cm.removeReferences(text)
+          text= cm.cleanText(text)
+
+          prediction = {
+               "prediction": cm.prediction(text)[0]
+          }
+
+          return prediction
+     
+     except HTTPException as he:
+          raise he
+     except Exception as e:
+          logger.exception("Error processing the PDF file")
+          raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+          
+
+
 
 
 
