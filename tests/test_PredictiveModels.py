@@ -183,8 +183,8 @@ with open(R"./predictive_model/2_EXPEI_ASAP.pkl","rb") as file2:
 """
 
 
-
-with open(R"./predictive_model/2_EXPEI_ICLR_PR.pkl","rb") as file3:
+"""
+with open(R"./predictive_model/2_EXPEI_ICLR_2017_PR.pkl","rb") as file3:
     print("Cargando Pickle")
     data = pickle.load(file3)
 
@@ -228,9 +228,115 @@ with open(R"./predictive_model/2_EXPEI_ICLR_PR.pkl","rb") as file3:
     print(confusion_matrix(y_te, y_pred))
     print(f"Accuracy: {accuracy_score(y_te, y_pred) * 100:.4f}%")
     print(f"Macro F1: {f1_score(y_te, y_pred, average='macro') * 100:.4f}%")
+"""
+
+"""
+# Pruebas de modelos de la partición de papers rechazados para saber la cantindad de verdaderos rechazados clasifican
+with open(R"./predictive_model/2_EXPEI_ICLR_2017_PR.pkl","rb") as file3:
+    print("Cargando Pickle")
+    data = pickle.load(file3)
+
+    print("Configurando modelo")
+    model = data['model']
+    vectorizer = data['vectorizer']
+    label_encoder = data['label_encoder']
+    vocabulario = data['vocabulario']
+    caracteristicas = data['caracteristicas']
+    pronombres = ['we', 'our', 'us']
+
+    #Loading df2 data
+    print("Obteniendo datos de testeo del CSV")
+    print("Loading testing data")
+    test_dfFull=dfFull[dfFull["Particion"]=="test"].reset_index(drop=True)
+    rejected_df = test_dfFull[test_dfFull['Accepted'] == 0].reset_index(drop=True)
+    print("La cantidad de datos de testeo son: ",len(test_dfFull))
+    print("La cantidad de datos rechazados: ",len(rejected_df), rejected_df["Accepted"].unique())
+
+    print("Obteniendo textos")
+    x_test = rejected_df['Texto Completo'].str.lower().apply(str).values
+    result_df = rejected_df.copy()
+
+    print("Obteniendo textos rechazados")
+    y_test = rejected_df['Accepted']
 
 
+    
+    print("Aplicando transformadores")
+    y_te = label_encoder.transform(y_test)
+    X_test = vectorizer.transform(x_test)
 
+      # === Calcular EXPEI ===
+    print("Calculating Expei")
+    fpT, fnpT, contadorPT, contadorNPT = frases(x_test, pronombres, X_test, vocabulario, caracteristicas)
+    peit, _ = PeiNei(contadorPT, fpT, contadorNPT, fnpT, X_test)
+    expei_test = expei_func(X_test, peit)
+
+    y_pred = model.predict(expei_test)
+    result_df["Prediccion"] = y_pred
+    
+   
+
+    aceptados = (result_df["Prediccion"] == 1).sum()
+    rechazados = (result_df["Prediccion"] == 0).sum()
+
+    print(f"Papers aceptados: {aceptados}")
+    print(f"Papers rechazados: {rechazados}")
+
+    print(f"Macro F1: {f1_score(y_te, y_pred, average='macro') * 100:.4f}%")
+
+  """  
+
+
+# Pruebas de modelos de la partición de papers aceptados para saber la cantindad de verdaderos aceptados clasifican
+with open(R"./predictive_model/2_EXPEI_ICLR_2017_PR.pkl","rb") as file3:
+    print("Cargando Pickle")
+    data = pickle.load(file3)
+
+    print("Configurando modelo")
+    model = data['model']
+    vectorizer = data['vectorizer']
+    label_encoder = data['label_encoder']
+    vocabulario = data['vocabulario']
+    caracteristicas = data['caracteristicas']
+    pronombres = ['we', 'our', 'us']
+
+    #Loading df2 data
+    print("Obteniendo datos de testeo del CSV")
+    print("Loading testing data")
+    test_dfFull=dfFull[dfFull["Particion"]=="test"].reset_index(drop=True)
+    rejected_df = test_dfFull[test_dfFull['Accepted'] == 1].reset_index(drop=True)
+    print("La cantidad de datos de testeo son: ",len(test_dfFull))
+    print("La cantidad de datos aceptados: ",len(rejected_df), rejected_df["Accepted"].unique())
+
+    print("Obteniendo textos")
+    x_test = rejected_df['Texto Completo'].str.lower().apply(str).values
+    result_df = rejected_df.copy()
+
+    print("Obteniendo textos aceptados")
+    y_test = rejected_df['Accepted']
+
+
+    
+    print("Aplicando transformadores")
+    y_te = label_encoder.transform(y_test)
+    X_test = vectorizer.transform(x_test)
+
+      # === Calcular EXPEI ===
+    print("Calculating Expei")
+    fpT, fnpT, contadorPT, contadorNPT = frases(x_test, pronombres, X_test, vocabulario, caracteristicas)
+    peit, _ = PeiNei(contadorPT, fpT, contadorNPT, fnpT, X_test)
+    expei_test = expei_func(X_test, peit)
+
+    y_pred = model.predict(expei_test)
+    result_df["Prediccion"] = y_pred
+    
+    aceptados = (result_df["Prediccion"] == 1).sum()
+    rechazados = (result_df["Prediccion"] == 0).sum()
+
+    print(f"Papers aceptados: {aceptados}")
+    print(f"Papers rechazados: {rechazados}")
+
+    print(f"Macro F1: {f1_score(y_te, y_pred, average='macro') * 100:.4f}%")
 
   
 
