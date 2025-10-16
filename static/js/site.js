@@ -107,6 +107,7 @@ document.getElementById('prediction-form').addEventListener('submit', async (e) 
         if (!response.ok) throw new Error('Request error');
 
         const data = await response.json();
+        console.log('Prediction data received:', data);
         displayPredictionResult(data);
     } catch (error) {
         alert('Error analyzing document: ' + error.message);
