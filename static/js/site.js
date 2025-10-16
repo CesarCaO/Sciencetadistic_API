@@ -99,7 +99,7 @@ document.getElementById('prediction-form').addEventListener('submit', async (e) 
     document.getElementById('predict-btn').disabled = true;
 
     try {
-        const response = await fetch('/prediction/', {
+        const response = await fetch('/prediction', {
             method: 'POST',
             body: formData
         });
