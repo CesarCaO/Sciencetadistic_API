@@ -42,14 +42,23 @@ def cleanText(texto):
     texto = texto.replace('\n', '')
     return texto
 
+def cleanTextForMetrics(text):
+    # Elimina caracteres no imprimibles o de control
+    text = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', text)
+    # Elimina combinaciones raras de símbolos (como ðþ∣ etc.)
+    text = re.sub(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ0-9\s.,;:!?\'"-]', ' ', text)
+    # Reduce espacios múltiples
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
 
 def wordsTagged(texto):#*Funcion para etiquetar las palabras y solo permitir las que tienen un valor lexico
     #python -m spacy download en_core_web_sm
     doc=nlp(texto)
     #for token in doc: #Este ciclo se creo para analizar como son etiquedas las palbras antes de filtrarlas por su peso lexico
         #print(f"{token.text}-->{token.pos_}")
-    tagged=[token.text.lower() for token in doc if token.pos_ in ["NOUN", "VERB", "ADJ", "ADV"]]
-    return set(tagged)
+    tagged=[token.text.lower() for token in doc if token.pos_ in ["NOUN", "VERB", "ADJ", "ADV"] and token.is_alpha and len(token.text) > 1]
+    return tagged
 
 def getFunctionWords(texto):#Función para obtener las function words
   info=nlp(texto)
@@ -169,8 +178,8 @@ def expei_func(x_, pei):
 def calculateSophistication(texto):
     tokens=tokenizeWords(texto)
     
-    tokens_lower = [w.lower() for w in tokens]
-    tokens_lower_set = set(tokens_lower)
+    tokens_lower = [w.lower() for w in tokens if w.isalpha()]  # filtra no palabras
+    
    
     lex_Words= [w for w in tokens_lower if w not in STOP_WORDS]
     
@@ -191,17 +200,18 @@ def calculateLexicalDensity(texto):
         return 0.0
     
     tokenized=tokenizeWords(texto)
-    tokens_lower = [w.lower() for w in tokenized]
-    #tagged=wordsTagged(texto)
-    lex_Words= [w for w in tokens_lower if w not in STOP_WORDS]
-    if not lex_Words:  # Evitar división por cero
-        return 0.0
+    #tokens_lower = [w.lower() for w in tokenized]
+    tagged=wordsTagged(texto)
+    #lex_Words= [w for w in tokens_lower if w not in STOP_WORDS]
+    #if not lex_Words:  # Evitar división por cero
+        #return 0.0
     
     #print("Palabras etiquetadas: ",len(tagged))
     #print("Palabras totales: ",len(tokenized))
-    #uniqueTagged=set(tagged)
-    #print("Palabras etiquetadas únicas: ",uniqueTagged)
-    DL_tagged=len(lex_Words)/float(len(tokenized))
+    
+    #print("Palabras etiquetadas únicas: ",tagged)
+    #DL_tagged=len(lex_Words)/float(len(tokenized))
+    DL_tagged=len(tagged)/float(len(tokenized))
     return DL_tagged
 
 
