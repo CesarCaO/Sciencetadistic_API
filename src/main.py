@@ -4,10 +4,13 @@ from scripts import MetricsV4 as cm
 from fastapi import FastAPI, UploadFile, HTTPException, File, Form, status
 from pathlib import Path
 import json
+import os
+import psutil
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
 from fastapi.responses import HTMLResponse
 import fitz
+from datetime import datetime
 import logging
 from fastapi.middleware.cors import CORSMiddleware
 from PyPDF2 import PdfReader, PdfWriter
@@ -113,6 +116,33 @@ app.mount(
     StaticFiles(directory=str(Path(__file__).resolve().parent.parent / "static")), 
     name="static"
 )
+
+#Health
+@app.get("/health")
+async def health_check():
+
+     process = psutil.Process(os.getpid())
+     mem_info = process.memory_info()
+     try:
+          return{
+               "status": "OK",
+               "timestamp": datetime.now().isoformat(),
+               "memory": {
+                    "rss_mb": round(mem_info.rss / 1024 / 1024, 2),  # Memoria física
+                    "vms_mb": round(mem_info.vms / 1024 / 1024, 2),  # Memoria virtual
+                    "percent": round(process.memory_percent(), 2)
+               },
+               "cpu": {
+               "percent": round(process.cpu_percent(interval=1), 2)
+               }  
+          }
+     except Exception as e:
+
+          logger.error(f"Liveness check failed: {str(e)}")
+          raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Service is not alive"
+          )
 
 @app.get("/", response_class= HTMLResponse)
 async def root():
