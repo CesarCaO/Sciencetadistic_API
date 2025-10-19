@@ -137,6 +137,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
           sanitize_content = sanitize_pdf(file_content)
           text = extract_text_from_pdf(sanitize_content)
           text= cm.removeReferences(text)
+          text= cm.cleanTextForMetrics(text)
           metric = metric.lower()
           
         
