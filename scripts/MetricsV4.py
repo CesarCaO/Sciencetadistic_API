@@ -46,7 +46,7 @@ def cleanTextForMetrics(text):
     # Elimina caracteres no imprimibles o de control
     text = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', text)
     # Elimina combinaciones raras de símbolos (como ðþ∣ etc.)
-    text = re.sub(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ0-9\s!?\'"-]', ' ', text)
+    text = re.sub(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ0-9\s.,;:!?\'"-]', ' ', text)
     # Reduce espacios múltiples
     text = re.sub(r'\s+', ' ', text).strip()
     return text

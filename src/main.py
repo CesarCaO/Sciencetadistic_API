@@ -167,12 +167,12 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
           sanitize_content = sanitize_pdf(file_content)
           text = extract_text_from_pdf(sanitize_content)
           text= cm.removeReferences(text)
-          text= cm.cleanTextForMetrics(text)
           metric = metric.lower()
           
         
           if metric == "lexical_density":
 
+               text= cm.cleanTextForMetrics(text)
                current_document = cm.calculateLexicalDensity(text)
                with open("./JSON_Metrics/Lexical_density.json", "r") as file:
                     data = json.load(file)
@@ -182,7 +182,8 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                return data
           
           elif metric =="sophistication":
-
+               
+               text= cm.cleanTextForMetrics(text)
                current_document=cm.calculateSophistication(text)
                with open("./JSON_Metrics/Sophistication.json", "r") as file:
                     data = json.load(file)
