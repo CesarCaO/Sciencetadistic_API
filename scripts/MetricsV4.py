@@ -44,11 +44,15 @@ def cleanText(texto):
 
 def cleanTextForMetrics(text):
     # Elimina caracteres no imprimibles o de control
-    text = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', text)
+    #text = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', text)
     # Elimina combinaciones raras de símbolos (como ðþ∣ etc.)
-    text = re.sub(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ0-9\s.,;:!?\'"-]', ' ', text)
+    #text = re.sub(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ0-9\s.,;:!?\'"-]', ' ', text)
     # Reduce espacios múltiples
-    text = re.sub(r'\s+', ' ', text).strip()
+    #text = re.sub(r'\s+', ' ', text).strip()
+
+      # Limpieza más suave para métricas de readability
+    text = re.sub(r'[\x00-\x1f\x7f-\x9f]', ' ', text)  # Solo caracteres de control
+    text = re.sub(r'\s+', ' ', text).strip()  # Solo espacios múltiples
     return text
 
 
@@ -72,7 +76,7 @@ def tokenizeWords(texto):#Separador de palabras
     listPalabras=nltk.word_tokenize(texto)
     return [token for token in listPalabras if token.isalpha()]
 
-
+"""
 def removeReferences(texto):
     #multilanguage regex to remove references
     #textoLower=texto.lower()
@@ -93,7 +97,23 @@ def removeReferences(texto):
         return texto[:match.start()]
     else:
         return texto
-
+"""
+def removeReferences(texto):
+    # Buscar patrones más específicos de secciones de referencias
+    patterns = [
+        r'\n\s*REFERENCES\s*\n',
+        r'\n\s*BIBLIOGRAPHY\s*\n', 
+        r'\n\s*REFERENCIAS\s*\n',
+        r'\n\s*BIBLIOGRAFÍA\s*\n'
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, texto, re.IGNORECASE)
+        if match:
+            return texto[:match.start()]
+    
+    return texto
+     
 #def getEasyWords():#Función para obtener las 3000 palabras más faciles del idioma inglés
     #path = os.path.join(os.path.dirname(__file__),"txts", "3000easyWords.txt")
     #path="./data/3000easyWords.txt"
