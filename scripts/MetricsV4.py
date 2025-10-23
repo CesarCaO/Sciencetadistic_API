@@ -220,18 +220,18 @@ def calculateLexicalDensity(texto):
         return 0.0
     
     tokenized=tokenizeWords(texto)
-    #tokens_lower = [w.lower() for w in tokenized]
-    tagged=wordsTagged(texto)
-    #lex_Words= [w for w in tokens_lower if w not in STOP_WORDS]
-    #if not lex_Words:  # Evitar división por cero
-        #return 0.0
+    tokens_lower = [w.lower() for w in tokenized]
+    #tagged=wordsTagged(texto)
+    lex_Words= [w for w in tokens_lower if w not in STOP_WORDS]
+    if not lex_Words:  # Evitar división por cero
+        return 0.0
     
     #print("Palabras etiquetadas: ",len(tagged))
     #print("Palabras totales: ",len(tokenized))
     
     #print("Palabras etiquetadas únicas: ",tagged)
-    #DL_tagged=len(lex_Words)/float(len(tokenized))
-    DL_tagged=len(tagged)/float(len(tokenized))
+    DL_tagged=len(lex_Words)/float(len(tokenized))
+    #DL_tagged=len(tagged)/float(len(tokenized))
     return DL_tagged
 
 
