@@ -27,7 +27,7 @@ app = FastAPI() #objeto que instancia Fast API
 #SEGURIDAD PERIMETRAL
 
 #Configuración del tamaño de PDF
-MAX_FILE_SIZE = 4 * 1024 * 1024  # 10MB límite de tamaño
+MAX_FILE_SIZE = 4 * 1024 * 1024  # 4MB límite de tamaño
 ALLOWED_MIME_TYPES = {"application/pdf"}
 
 #Configuración para la optimización
@@ -166,9 +166,9 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
           file_content = await validate_pdf_file(file)
           sanitize_content = sanitize_pdf(file_content)
           text = extract_text_from_pdf(sanitize_content)
-          logger.info(f"Palabras después de extraer PDF: {len(text.split())}")
+          logger.info(f"Words after text extraction: {len(text.split())}")
           text= cm.removeReferences(text)
-          logger.info(f"Palabras después de remover referencias: {len(text.split())}")
+          logger.info(f"Words after reference removal: {len(text.split())}")
           metric = metric.lower()
           
         

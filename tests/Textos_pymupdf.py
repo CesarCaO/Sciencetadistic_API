@@ -1,5 +1,7 @@
 import fitz
 import os
+import nltk
+from scripts import MetricsV4 as cm
 """
 pdfs="D:/Proyectos Spyder/Categorizador de documentos/PDFs/" #En caso de estar en otra carpeta se debe poner la ruta, rb= lectura en binario
 
@@ -25,11 +27,14 @@ for file in langFile:
         txt.close()
 """
 
-pdf= "./PDFs/test_papers/Accepted/IJCRT1812944.pdf"
+pdf= "./PDFs/test_papers/Accepted/REPORTE DE CONFERENCIA (MECANICA DE SUELOS).pdf"
 
 doc = fitz.open(pdf, filetype="pdf")
 text = ""
 for page in doc:
     text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
 
-print(text)
+#text=cm.removeReferences(text)
+#text=cm.cleanTextForMetrics(text)
+print("número de oraciones: ", len(nltk.sent_tokenize(text)) )
+#print(text)
