@@ -236,18 +236,37 @@ def calculateLexicalDensity(texto):
 
 
 def calculateTTR(texto):
-   
-    lex=LexicalRichness(texto)
-    return (lex.ttr)
+    
+    if not texto or not texto.strip():
+        return 0.0
+    try:
+        lex = LexicalRichness(texto)
+        return lex.ttr
+    except Exception:
+        return 0.0
+    
+    
 
 
 def calculateTTRRoot(texto):
-    lex=LexicalRichness(texto)
-    return (lex.rttr)
+    if not texto or not texto.strip():
+        return 0.0
+    
+    try:
+        lex = LexicalRichness(texto)
+        return lex.rttr
+    except Exception:
+        return 0.0
 
 def calculateTTRCorrected(texto):
-    lex=LexicalRichness(texto)
-    return (lex.cttr)
+    if not texto or not texto.strip():
+        return 0.0
+    try:
+        lex = LexicalRichness(texto)
+        return lex.cttr
+    except Exception:
+        return 0.0
+
   
 #//////////////////////////////////////////////////////////////////////////////////////////////////////
 #*Redeability metrics

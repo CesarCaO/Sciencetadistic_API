@@ -95,6 +95,11 @@ def extract_text_from_pdf(content: bytes) -> str:
           for page in doc:
                text+=page.get_text().encode('utf-8').decode('utf-8',errors='ignore')
           
+          if not text.strip():
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="El documento PDF no contiene texto extraíble"
+            )
           return text
 
      except Exception as e:
@@ -176,6 +181,11 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
 
                text= cm.cleanTextForMetrics(text)
                current_document = cm.calculateLexicalDensity(text)
+               if(current_document == 0.0):
+                    raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="The document does not have extractable data")
+            
                with open("./JSON_Metrics/Lexical_density.json", "r") as file:
                     data = json.load(file)
                     data['metric'] = "Lexical_Density"
@@ -187,6 +197,11 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
                
                text= cm.cleanTextForMetrics(text)
                current_document=cm.calculateSophistication(text)
+               if(current_document == 0.0):
+                    raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="The document does not have extractable data")
+               
                with open("./JSON_Metrics/Sophistication.json", "r") as file:
                     data = json.load(file)
                     data['metric'] = "Sophistication"
@@ -198,6 +213,10 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
           elif metric =="ttr":
 
                current_document=cm.calculateTTR(text)
+               if(current_document == 0.0):
+                    raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="The document does not have extractable data")
                with open("./JSON_Metrics/TTR.json", "r") as file:
                     data = json.load(file)
                     data['metric'] = "TTR"
@@ -208,6 +227,10 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
           elif metric == "root_ttr":
 
                current_document=cm.calculateTTRRoot(text)
+               if(current_document == 0.0):
+                    raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="The document does not have extractable data")
                with open("./JSON_Metrics/Root_TTR.json","r") as file:
                     data = json.load(file)
                     data['metric'] = "RootTTR"
@@ -218,6 +241,10 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
           elif metric == "ttr_corrected":
 
                current_document = cm.calculateTTRCorrected(text)
+               if(current_document == 0.0):
+                    raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="The document does not have extractable data")
                with open("./JSON_Metrics/Corrected_TTR.json","r") as file:
                     data = json.load(file)
                     data['metric'] = "CorrectedTTR"
