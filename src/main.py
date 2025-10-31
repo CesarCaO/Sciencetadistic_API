@@ -41,7 +41,7 @@ async def validate_file_size(file:UploadFile) -> None:
      if file_size > MAX_FILE_SIZE:
           raise HTTPException(
                status_code= status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-               detail = f"El archivo excede el tamaño máximo permitido de {MAX_FILE_SIZE} bytes"
+               detail = f"File exceeds the maximum allowed size of {MAX_FILE_SIZE} bytes"
           )
 #Validar tipo de documento
 async def validate_pdf_file(file:UploadFile) -> bytes:
@@ -52,7 +52,7 @@ async def validate_pdf_file(file:UploadFile) -> bytes:
      if file_type not in ALLOWED_MIME_TYPES:
           raise HTTPException(
                status_code= status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-               detail="El archivo debe ser un PDF válido"
+               detail="File must be a valid PDF"
           )
      
      #Leer el resto del archivo
@@ -80,10 +80,10 @@ def sanitize_pdf(content: bytes) -> bytes:
           return output.getvalue()
      
      except Exception as e:
-          logger.error(f"Error en sanitización de PDF: {str(e)}")
+          logger.error(f"Error in PDF sanitization: {str(e)}")
           raise HTTPException(
                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-               detail="El PDF no pudo ser procesado por contener contenido inválido"
+               detail="PDF could not be processed due to invalid content"
           )
 
 
@@ -98,15 +98,15 @@ def extract_text_from_pdf(content: bytes) -> str:
           if not text.strip():
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="El documento PDF no contiene texto extraíble"
+                detail="PDF document does not contain extractable text"
             )
           return text
 
      except Exception as e:
-          logger.error(f"Error al extraer texto del PDF: {str(e)}")
+          logger.error(f"Error extracting text from PDF: {str(e)}")
           raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="El PDF no pudo ser procesado y no se pudo extraer el texto"
+            detail="PDF could not be processed and text could not be extracted"
         )
 
 app.add_middleware(
