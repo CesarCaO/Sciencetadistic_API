@@ -17,40 +17,43 @@ from PyPDF2 import PdfReader, PdfWriter
 import magic
 from typing import Annotated
 from fastapi.staticfiles import StaticFiles
+from fastapi.openapi.utils import get_openapi
 #Configuración de logging
 logger=logging.getLogger("uvicorn.error")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 app = FastAPI(
      title="Sciencetadistic API",
-     description="""
-
-     API for stylometrical analysis, lexical and predictive analysis for scientific texts 
-
-     GitHub Repository : https://github.com/CesarCaO/Sciencetadistic_API.git
-
-     """,
+     description="API for stylometrical analysis, lexical and predictive analysis of scientific texts",
      version="1.8.2",
-     openapi_tags=[
-          {
-               "name": "metrics",
-               "description": "Lexical richness and readability metrics"
-          },
-          {
-               "name": "prediction",
-               "description": "Scientific papers acceptance prediction using Machine Learning techniques"
-          },
-          {
-               "name": "health",
-               "description": "Know the API status and his computational usage"
-          }
-     ],
-     docs_url="/documentacion",
-     
-     
+     contact= {
+          "name" : "Cesar Castelazo Ortiz",
+          "email" : ["ca411523@uaeh.edu.mx","ccastelazo8@gmail.com"]
+     }   
 ) #objeto que instancia Fast API
 
+def custom_openapi():
+     if app.openapi_schema:
+          return app.openapi_schema
+     
+     openapi_schema = get_openapi(
+          title="Sciencetadistic API",
+          description="API for stylometrical analysis, lexical and predictive analysis of scientific texts",
+          version="1.8.2",
+          routes=app.routes,
 
+     )
+
+     openapi_schema["externalDocs"] = {
+          "description" : "GitHub Repository",
+          "url" : "https://github.com/CesarCaO/Sciencetadistic_API.git"
+     }
+
+     app.openapi_schema = openapi_schema
+
+     return app.openapi_schema
+
+app.openapi = custom_openapi
 
 #SEGURIDAD PERIMETRAL
 
