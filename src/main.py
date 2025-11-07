@@ -20,7 +20,35 @@ from fastapi.staticfiles import StaticFiles
 #Configuración de logging
 logger=logging.getLogger("uvicorn.error")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-app = FastAPI() #objeto que instancia Fast API
+
+app = FastAPI(
+     title="Sciencetadistic API",
+     description="""
+
+     API for stylometrical analysis, lexical and predictive analysis for scientific texts 
+
+     GitHub Repository : https://github.com/CesarCaO/Sciencetadistic_API.git
+
+     """,
+     version="1.8.2",
+     openapi_tags=[
+          {
+               "name": "metrics",
+               "description": "Lexical richness and readability metrics"
+          },
+          {
+               "name": "prediction",
+               "description": "Scientific papers acceptance prediction using Machine Learning techniques"
+          },
+          {
+               "name": "health",
+               "description": "Know the API status and his computational usage"
+          }
+     ],
+     docs_url="/documentacion",
+     
+     
+) #objeto que instancia Fast API
 
 
 
@@ -108,7 +136,7 @@ def extract_text_from_pdf(content: bytes) -> str:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="PDF could not be processed and text could not be extracted"
         )
-
+"""
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -121,7 +149,7 @@ app.mount(
     StaticFiles(directory=str(Path(__file__).resolve().parent.parent / "static")), 
     name="static"
 )
-
+"""
 #Health
 @app.get("/health")
 async def health_check():
@@ -149,15 +177,17 @@ async def health_check():
             detail="Service is not alive"
           )
 
+
+"""
 @app.get("/", response_class= HTMLResponse)
 async def root():
-    """Servir interfaz principal"""
+    
     try:
         with open(Path(__file__).resolve().parent.parent / "static" / "index.html", "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="Not found")
-
+"""
 
 @app.post("/metrics")
 async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular: lexical_density, sophistication, ttr, root_ttr, ttr_corrected, flesh, kincaid, fog, smog")], file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
@@ -314,11 +344,6 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
         # Forzar recolección de basura
         import gc
         gc.collect()
-
-
-
-
-    
 
 @app.post("/prediction")
 async def predicitve_model(file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
