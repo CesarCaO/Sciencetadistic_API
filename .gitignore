@@ -182,6 +182,13 @@ predictive_model/
 test/ExtractText_phase
 test/phase_XML
 
+
+static/
 Deprecated/
+
+test/
+
+
+
 
 
