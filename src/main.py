@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 import fitz
 from datetime import datetime
 import logging
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from PyPDF2 import PdfReader, PdfWriter
 import magic
@@ -29,8 +30,9 @@ app = FastAPI(
      contact= {
           "name" : "Cesar Castelazo Ortiz",
           "email" : ["ca411523@uaeh.edu.mx","ccastelazo8@gmail.com"]
-     }   
-) #objeto que instancia Fast API
+     }, 
+     default_response_class= JSONResponse  
+)         #objeto que instancia Fast API
 
 def custom_openapi():
      if app.openapi_schema:
@@ -193,7 +195,7 @@ async def root():
 """
 
 @app.post("/metrics")
-async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular: lexical_density, sophistication, ttr, root_ttr, ttr_corrected, flesh, kincaid, fog, smog")], file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
+async def metrics(metric: Annotated[str, Form(description= "Lexical metrics: lexical_density, sophistication, ttr, root_ttr, ttr_corrected, flesh, kincaid, fog, smog")], file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
       # Inicializar variables al inicio
      file_content = None
      sanitize_content = None
@@ -349,7 +351,7 @@ async def metrics(metric: Annotated[str, Form(description= "Métrica a calcular:
         gc.collect()
 
 @app.post("/prediction")
-async def predicitve_model(file:Annotated[UploadFile, File(description="Archivo PDF a analizar")]):
+async def predicitve_model(file:Annotated[UploadFile, File(description="Scientific paper on PDF format")]):
      
      try:
           await validate_file_size(file)
