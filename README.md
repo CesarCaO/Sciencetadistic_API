@@ -25,7 +25,9 @@ API for stylometric analysis and acceptance prediction of scientific articles. T
 ### Quick Access
 - **Interactive Documentation (Swagger)**: https://scientadistic-api.onrender.com/docs
 
+# 📝 Usage Examples
 ## 🛠️ Installation
+
 
 ### Prerequisites
 
@@ -33,13 +35,30 @@ API for stylometric analysis and acceptance prediction of scientific articles. T
 - pip
 
 ### Install dependencies
+Only requires the `requests` library (usually pre-installed):
 
 ```bash
 pip install requests
 ```
 
 
+### Lexical Metrics endpoint
 
+**Type** : Post. <br>
+**URL** : https://scientadistic-api.onrender.com//metrics. <br>
+**Possibles values of 'metric_type'** :
+- lexical_density
+- sophistication
+- ttr
+- root_ttr
+- ttr_corrected
+- flesh
+- kincaid
+- fog
+- smog <br>
+
+ 
+**PDF file** :  PDF file to analyze (max 4MB)
 ```python
 import requests
 
@@ -68,7 +87,7 @@ def analyze_document_metrics(pdf_path, metric_type):
             
             
 
-            print(f" {result['metric']} Analysis Results:")
+            print(f"Metric used: {result['metric']} ")
             print(f"Your document score: {result['current_document']:.4f}")
             #Warning: Warning: If you run the following lines, more than 21000 values will appear on the console. They are commented out so you can observe a simplified API response instead.
             #print(f"Accepted papers : {result['Accepted']}")
@@ -78,3 +97,66 @@ def analyze_document_metrics(pdf_path, metric_type):
             print(f" Error: {response.text}")
             return None
 ```
+**Expected response**
+
+```bash
+Metric used: 
+Your document score: 
+```
+### Prediction endpoint
+
+**Type** : Post. <br>
+**URL** : https://scientadistic-api.onrender.com/prediction. <br>
+**PDF file** :  PDF file to analyze (max 4MB)
+```python
+def predict_paper(pdf_path):
+    """
+    Analyze lexical metrics of a PDF document
+    
+    Args:
+        pdf_path (str): Path to your PDF file
+        
+    """
+
+    url = "https://scientadistic-api.onrender.com/prediction"
+    
+
+    with open(pdf_path, "rb") as file:
+        files = {"file": (pdf_path.split("/")[-1], file, "application/pdf")}
+        
+        response = requests.post(url,files=files)
+        
+        if response.status_code == 200:
+            result = response.json()
+
+            print(f" {result['prediction']} Analysis Results:")
+            
+            return result
+        else:
+            print(f" Error: {response.text}")
+            return None
+
+```
+
+#### Expected response
+**Accepted**
+```bash
+Results: 1 
+```
+
+**Rejected**
+```bash
+Results: 10
+```
+
+
+## Acknowledgments
+-spaCy for natural language processing models
+-FastAPI for the web framework
+-NLTK for text processing tools
+-Readability for readability metrics
+
+## Limitations
+- The server shuts down after an inactivity period, it would take few minutes to start up again
+- The accuracy of the Machine Learning model used for prediction is currenty 66%. It is expected to be improved
+- The RAM server is limited due to the free Render account, so it may crash after too many requests or heavy documents. This problem will be resolved in the future
