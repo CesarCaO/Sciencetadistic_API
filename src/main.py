@@ -141,7 +141,7 @@ def extract_text_from_pdf(content: bytes) -> str:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="PDF could not be processed and text could not be extracted"
         )
-"""
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -149,6 +149,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+"""
 app.mount(
     "/static", 
     StaticFiles(directory=str(Path(__file__).resolve().parent.parent / "static")), 
