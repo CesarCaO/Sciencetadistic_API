@@ -3,8 +3,8 @@ import json
 from scripts import MetricsV4 as m
 from tqdm.auto import tqdm
 
-file_path="./CSVs/ReadeabilityPapers_CSV.csv"
-#file_path2="./CSVs/SMOG_CSV.csv"
+#file_path="./CSVs/ReadeabilityPapers_CSV.csv"
+file_path="./CSVs/SMOG_CSV.csv"
 save_path="./JSON_Metrics/"
 
 
@@ -35,7 +35,7 @@ with open(save_path+'/Lexical_Density.json', "w", encoding="utf-8") as file:
     json.dump(dl,file, indent=4)
     file.close()
 """
-
+"""
 #Sophistication
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
 sf_accepted = df_aceptados['Texto Completo'].progress_apply(m.calculateSophistication).tolist()
@@ -51,7 +51,7 @@ with open(save_path+'/Sophistication.json', "w", encoding="utf-8") as file:
     json.dump(sf,file, indent=4)
     file.close()
 """
-
+"""
 #TTR
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
 ttr_acepted=df_aceptados["Texto Completo"].progress_apply(m.calculateTTR).tolist()
@@ -66,10 +66,10 @@ ttr={
 with open(save_path+'TTR.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
-
+"""
 """
 #Root TTR
-"""
+
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
 ttr_acepted=df_aceptados["Texto Completo"].progress_apply(m.calculateTTRRoot).tolist()
 tqdm.pandas(desc="Progreso de procesamiento de Rechazados")
@@ -83,6 +83,7 @@ ttr={
 with open(save_path+'Root_TTR.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
+
 """
 """
 #TTR corrected
@@ -102,8 +103,9 @@ with open(save_path+'Corrected_TTR.json', "w", encoding="utf-8") as file:
     file.close()
 
 """
-#*Flesch
 """
+#*Flesch
+
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
 acepted=df_aceptados["Texto Completo"].progress_apply(m.TFRE).tolist()
 tqdm.pandas(desc="Progreso de procesamiento de Rechazados")
@@ -135,7 +137,7 @@ with open(save_path+'Flesh_Kincaid.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
 """
-"""
+
 #*Fog index
 
 tqdm.pandas(desc="Progreso de procesamiento de Aceptados")
@@ -148,10 +150,10 @@ ttr={
     'Rejected':rejected
 }
 
-with open(save_path+'Gunning_Fog.json', "w", encoding="utf-8") as file:
+with open(save_path+'FogIndex.json', "w", encoding="utf-8") as file:
     json.dump(ttr,file, indent=4)
     file.close()
-"""
+
 
 #SMOG
 """

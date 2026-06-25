@@ -212,8 +212,8 @@ def calculateSophistication(texto):
         if w not in EASY_WORDS and len(w) > 3
     )
 
-    print("Palabras dificiles",hard_words_count)
-    print(len(lex_Words))
+    #print("Palabras dificiles",hard_words_count)
+    #print(len(lex_Words))
     sophistication = hard_words_count / len(lex_Words)
     return sophistication
 
