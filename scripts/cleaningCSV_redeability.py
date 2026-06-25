@@ -34,4 +34,4 @@ df["conteo_oraciones"] = df["Texto Completo"].progress_apply(contar_oraciones)
 
 df_filtrado = df[df['conteo_oraciones'] >=30]
 print("Número de registros seleccionados ", len(df_filtrado))
-df_filtrado.to_csv('./CSVs/SMOG_CSV.csv', index=False)
+#df_filtrado.to_csv('./CSVs/SMOG_CSV.csv', index=False)
